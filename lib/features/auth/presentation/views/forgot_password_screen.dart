@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../app/app_routes.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/widgets/custom_text_field.dart';
 import '../../../../core/widgets/liquid_glass_container.dart';
 import '../../../../core/widgets/primary_button.dart';
 import '../view_models/recovery_state.dart';
@@ -87,37 +88,6 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
       case RecoveryBackResult.signIn:
         _openSignIn();
     }
-  }
-
-  InputDecoration _inputDecoration({
-    required String label,
-    required IconData icon,
-    Widget? suffixIcon,
-  }) {
-    return InputDecoration(
-      labelText: label,
-      prefixIcon: Icon(icon),
-      suffixIcon: suffixIcon,
-      filled: true,
-      fillColor: Colors.white.withValues(alpha: 0.65),
-
-      contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 18),
-
-      border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
-
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(16),
-        borderSide: BorderSide(color: Colors.grey.withValues(alpha: 0.25)),
-      ),
-
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(16),
-        borderSide: const BorderSide(
-          color: AppColors.primaryOrange,
-          width: 1.6,
-        ),
-      ),
-    );
   }
 
   // ============================================
@@ -206,8 +176,6 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
           // --------------------------------------
           // REAL INPUT FIELD
           // --------------------------------------
-          // An invisible text input over the boxes.
-          // Handles keyboard, paste, and OTP autofill.
           Positioned.fill(
             child: TextField(
               controller: _otpController,
@@ -281,18 +249,12 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
 
         const SizedBox(height: 30),
 
-        TextField(
+        CustomTextField(
+          label: 'Email Address',
+          hint: 'example@gmail.com',
           controller: _emailController,
-          enabled: !_isLoading,
           keyboardType: TextInputType.emailAddress,
-          textInputAction: TextInputAction.done,
-          autofillHints: const [AutofillHints.email],
-          onSubmitted: (_) => _sendOtp(),
-
-          decoration: _inputDecoration(
-            label: 'Email Address',
-            icon: Icons.email_outlined,
-          ),
+          prefixIcon: Icons.email_outlined,
         ),
 
         const SizedBox(height: 28),
@@ -493,60 +455,39 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
         const SizedBox(height: 30),
 
         // NEW PASSWORD
-        TextField(
+        CustomTextField(
+          label: 'New Password',
+          hint: '••••••••',
           controller: _passwordController,
-          enabled: !_isLoading,
           obscureText: _obscurePassword,
-
-          autofillHints: const [AutofillHints.newPassword],
-
-          decoration: _inputDecoration(
-            label: 'New Password',
-            icon: Icons.lock_outline_rounded,
-
-            suffixIcon: IconButton(
-              icon: Icon(
-                _obscurePassword
-                    ? Icons.visibility_off_outlined
-                    : Icons.visibility_outlined,
-              ),
-
-              onPressed: () {
-                ref
-                    .read(recoveryViewModelProvider.notifier)
-                    .togglePasswordVisibility();
-              },
-            ),
-          ),
+          prefixIcon: Icons.lock_outline_rounded,
+          suffixIcon: _obscurePassword
+              ? Icons.visibility_off_outlined
+              : Icons.visibility_outlined,
+          onSuffixTap: () {
+            ref
+                .read(recoveryViewModelProvider.notifier)
+                .togglePasswordVisibility();
+          },
         ),
 
         const SizedBox(height: 18),
 
         // CONFIRM PASSWORD
-        TextField(
+        CustomTextField(
+          label: 'Confirm New Password',
+          hint: '••••••••',
           controller: _confirmPasswordController,
-          enabled: !_isLoading,
           obscureText: _obscureConfirmPassword,
-          textInputAction: TextInputAction.done,
-
-          decoration: _inputDecoration(
-            label: 'Confirm New Password',
-            icon: Icons.lock_reset_rounded,
-
-            suffixIcon: IconButton(
-              icon: Icon(
-                _obscureConfirmPassword
-                    ? Icons.visibility_off_outlined
-                    : Icons.visibility_outlined,
-              ),
-
-              onPressed: () {
-                ref
-                    .read(recoveryViewModelProvider.notifier)
-                    .toggleConfirmPasswordVisibility();
-              },
-            ),
-          ),
+          prefixIcon: Icons.lock_reset_rounded,
+          suffixIcon: _obscureConfirmPassword
+              ? Icons.visibility_off_outlined
+              : Icons.visibility_outlined,
+          onSuffixTap: () {
+            ref
+                .read(recoveryViewModelProvider.notifier)
+                .toggleConfirmPasswordVisibility();
+          },
         ),
 
         const SizedBox(height: 12),
@@ -610,47 +551,48 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
 
                 child: Column(
                   children: [
-                    // BACK BUTTON
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: IconButton(
-                        onPressed: _isLoading ? null : _handleBack,
-
-                        icon: const Icon(
-                          Icons.arrow_back_ios_new_rounded,
-                          size: 20,
-                        ),
-                      ),
-                    ),
-
-                    const SizedBox(height: 20),
-
                     // LIQUID GLASS CARD
                     LiquidGlassContainer(
                       child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // ICON
-                          Container(
-                            width: 76,
-                            height: 76,
+                          // BACK BUTTON AT THE TOP INSIDE CONTAINER
+                          IconButton(
+                            onPressed: _isLoading ? null : _handleBack,
+                            padding: EdgeInsets.zero,
+                            alignment: Alignment.centerLeft,
+                            icon: const Icon(
+                              Icons.arrow_back_ios_new_rounded,
+                              size: 20,
+                            ),
+                          ),
 
-                            decoration: BoxDecoration(
-                              color: AppColors.primaryOrange.withValues(
-                                alpha: 0.12,
+                          const SizedBox(height: 16),
+
+                          // ICON
+                          Center(
+                            child: Container(
+                              width: 76,
+                              height: 76,
+
+                              decoration: BoxDecoration(
+                                color: AppColors.primaryOrange.withValues(
+                                  alpha: 0.12,
+                                ),
+
+                                borderRadius: BorderRadius.circular(24),
                               ),
 
-                              borderRadius: BorderRadius.circular(24),
-                            ),
+                              child: Icon(
+                                _step == RecoveryStep.email
+                                    ? Icons.lock_reset_rounded
+                                    : _step == RecoveryStep.otp
+                                    ? Icons.mark_email_read_outlined
+                                    : Icons.shield_outlined,
 
-                            child: Icon(
-                              _step == RecoveryStep.email
-                                  ? Icons.lock_reset_rounded
-                                  : _step == RecoveryStep.otp
-                                  ? Icons.mark_email_read_outlined
-                                  : Icons.shield_outlined,
-
-                              size: 36,
-                              color: AppColors.primaryOrange,
+                                size: 36,
+                                color: AppColors.primaryOrange,
+                              ),
                             ),
                           ),
 

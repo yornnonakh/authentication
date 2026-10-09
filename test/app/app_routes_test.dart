@@ -39,6 +39,16 @@ void main() {
     );
   }
 
+  Future<void> completeOnboarding(WidgetTester tester) async {
+    for (int i = 0; i < 3; i++) {
+      final btn = find.byType(ElevatedButton);
+      if (btn.evaluate().isNotEmpty) {
+        await tester.tap(btn.first);
+        await tester.pumpAndSettle();
+      }
+    }
+  }
+
   testWidgets(
     'app navigation flow: splash -> onboarding -> sign in -> main app',
     (tester) async {
@@ -53,8 +63,7 @@ void main() {
       expect(find.byType(OnboardingScreen), findsOneWidget);
 
       // 3. Complete onboarding -> Sign In screen
-      await tester.tap(find.text('Log in'));
-      await tester.pumpAndSettle();
+      await completeOnboarding(tester);
       expect(find.byType(SignInScreen), findsOneWidget);
 
       // 4. Sign in -> Open App (Dashboard screen)

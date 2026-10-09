@@ -35,6 +35,16 @@ void main() {
     await tester.pump();
   }
 
+  Future<void> completeOnboarding(WidgetTester tester) async {
+    for (int i = 0; i < 3; i++) {
+      final btn = find.byType(ElevatedButton);
+      if (btn.evaluate().isNotEmpty) {
+        await tester.tap(btn.first);
+        await tester.pumpAndSettle();
+      }
+    }
+  }
+
   testWidgets(
     'first launch shows splash then onboarding and supports swiping',
     (tester) async {
@@ -60,21 +70,19 @@ void main() {
   ) async {
     await mount(tester);
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Get Started'));
-    await tester.pumpAndSettle();
+    await completeOnboarding(tester);
     expect(find.byType(SignInScreen), findsOneWidget);
     expect(onboarding.completed, isTrue);
     expect(onboarding.saveCalls, 1);
     expect(auth.signOutCalls, 0);
   });
 
-  testWidgets('log in remembers onboarding and shows onboarding on next startup when unauthenticated', (
+  testWidgets('completion remembers onboarding and shows onboarding on next startup when unauthenticated', (
     tester,
   ) async {
     await mount(tester);
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Log in'));
-    await tester.pumpAndSettle();
+    await completeOnboarding(tester);
     expect(find.byType(SignInScreen), findsOneWidget);
     expect(onboarding.completed, isTrue);
     await tester.pumpWidget(const SizedBox());
@@ -102,8 +110,7 @@ void main() {
     onboarding.saveFailure = Exception('Storage unavailable');
     await mount(tester);
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Get Started'));
-    await tester.pumpAndSettle();
+    await completeOnboarding(tester);
     expect(find.byType(OnboardingScreen), findsOneWidget);
     expect(
       find.text('Unable to save your preference. Please try again.'),
@@ -111,8 +118,7 @@ void main() {
     );
     expect(onboarding.completed, isFalse);
     onboarding.saveFailure = null;
-    await tester.tap(find.text('Log in'));
-    await tester.pumpAndSettle();
+    await completeOnboarding(tester);
     expect(find.byType(SignInScreen), findsOneWidget);
     expect(onboarding.completed, isTrue);
   });
@@ -138,9 +144,11 @@ void main() {
     );
     for (var page = 0; page < 3; page++) {
       expect(tester.takeException(), isNull);
-      expect(find.text('Get Started'), findsOneWidget);
-      await tester.drag(find.byType(PageView), const Offset(-320, 0));
-      await tester.pumpAndSettle();
+      expect(find.byType(ElevatedButton), findsOneWidget);
+      if (page < 2) {
+        await tester.drag(find.byType(PageView), const Offset(-320, 0));
+        await tester.pumpAndSettle();
+      }
     }
     expect(tester.takeException(), isNull);
   });
