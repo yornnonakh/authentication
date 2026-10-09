@@ -37,6 +37,14 @@ void main() {
     await tester.pumpAndSettle();
   }
 
+  Future<void> completeOnboarding(WidgetTester tester) async {
+    await tester.tap(find.text('Next'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Next'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Get Started'));
+  }
+
   testWidgets('reopening with a saved session shows the account and profile', (
     tester,
   ) async {
@@ -55,7 +63,7 @@ void main() {
     await mount(tester);
     expect(find.byType(OnboardingScreen), findsOneWidget);
     expect(find.byType(DashboardScreen), findsNothing);
-    await tester.tap(find.text('Get Started'));
+    await completeOnboarding(tester);
     await tester.pumpAndSettle();
     expect(find.byType(SignInScreen), findsOneWidget);
   });
@@ -64,7 +72,7 @@ void main() {
     tester,
   ) async {
     await mount(tester);
-    await tester.tap(find.text('Get Started'));
+    await completeOnboarding(tester);
     await tester.pumpAndSettle();
     await tester.enterText(
       find.byType(TextFormField).at(0),
@@ -120,7 +128,7 @@ void main() {
     'password recovery does not send the sign-in screen to dashboard',
     (tester) async {
       await mount(tester);
-      await tester.tap(find.text('Get Started'));
+      await completeOnboarding(tester);
       await tester.pumpAndSettle();
       auth.events.add(
         const AuthEvent(AuthEventType.passwordRecovery, hasSession: true),

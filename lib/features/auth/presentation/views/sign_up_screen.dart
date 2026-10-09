@@ -111,6 +111,7 @@ class _SignUpFormState extends ConsumerState<_SignUpForm> {
                   label: 'Name',
                   hint: 'Esther Howard',
                   controller: _nameController,
+                  prefixIcon: Icons.person_outline_rounded,
                 ),
                 const SizedBox(height: 16),
 
@@ -120,6 +121,7 @@ class _SignUpFormState extends ConsumerState<_SignUpForm> {
                   hint: 'example@gmail.com',
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
+                  prefixIcon: Icons.email_outlined,
                 ),
                 const SizedBox(height: 16),
 
@@ -129,6 +131,7 @@ class _SignUpFormState extends ConsumerState<_SignUpForm> {
                   hint: '••••••••',
                   controller: _passwordController,
                   obscureText: _obscurePassword,
+                  prefixIcon: Icons.lock_outline_rounded,
                   suffixIcon: _obscurePassword
                       ? Icons.visibility_off
                       : Icons.visibility,

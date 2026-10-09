@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import '../../../../app/app_routes.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/custom_text_field.dart';
@@ -128,6 +127,7 @@ class _SignInFormState extends ConsumerState<_SignInForm> {
                         hint: 'example@gmail.com',
                         controller: _emailController,
                         keyboardType: TextInputType.emailAddress,
+                        prefixIcon: Icons.email_outlined,
                       ),
 
                       const SizedBox(height: 18),
@@ -140,6 +140,7 @@ class _SignInFormState extends ConsumerState<_SignInForm> {
                         hint: '••••••••',
                         controller: _passwordController,
                         obscureText: _obscurePassword,
+                        prefixIcon: Icons.lock_outline_rounded,
                         suffixIcon: _obscurePassword
                             ? Icons.visibility_off
                             : Icons.visibility,
