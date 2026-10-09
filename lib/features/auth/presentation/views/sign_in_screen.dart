@@ -1,19 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../app/app_routes.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/custom_text_field.dart';
 import '../../../../core/widgets/liquid_glass_container.dart';
 import '../../../../core/widgets/primary_button.dart';
-import '../../../home/presentation/views/dashboard_screen.dart';
 import '../view_models/auth_feedback.dart';
 import '../view_models/sign_in_state.dart';
 import '../view_models/sign_in_view_model.dart';
 import '../widgets/auth_background.dart';
 import '../widgets/auth_feedback_snackbar.dart';
 import '../widgets/social_login_row.dart';
-import 'forgot_password_screen.dart';
-import 'sign_up_screen.dart';
 
 class SignInScreen extends StatelessWidget {
   const SignInScreen({super.key});
@@ -57,8 +55,8 @@ class _SignInFormState extends ConsumerState<_SignInForm> {
   }
 
   void _navigateToHome() {
-    Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute(builder: (_) => const DashboardScreen()),
+    Navigator.of(context).pushNamedAndRemoveUntil(
+      AppRoutes.dashboard,
       (route) => false,
     );
   }
@@ -113,7 +111,7 @@ class _SignInFormState extends ConsumerState<_SignInForm> {
                       const SizedBox(height: 8),
 
                       const Text(
-                        'Sign in to continue to FinSight',
+                        'Sign in to continue to Expense Tracker',
                         style: TextStyle(
                           fontSize: 14,
                           color: AppColors.textSecondary,
@@ -165,12 +163,8 @@ class _SignInFormState extends ConsumerState<_SignInForm> {
                                       .read(signInViewModelProvider.notifier)
                                       .cancelGoogleSignIn();
 
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (_) =>
-                                          const ForgotPasswordScreen(),
-                                    ),
+                                  Navigator.of(context).pushNamed(
+                                    AppRoutes.forgotPassword,
                                   );
                                 },
                           child: const Text(
@@ -290,11 +284,8 @@ class _SignInFormState extends ConsumerState<_SignInForm> {
                                         .read(signInViewModelProvider.notifier)
                                         .cancelGoogleSignIn();
 
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (_) => const SignUpScreen(),
-                                      ),
+                                    Navigator.of(context).pushNamed(
+                                      AppRoutes.signUp,
                                     );
                                   },
                             child: const Text(

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../app/app_routes.dart';
 import '../../../auth/data/providers/auth_providers.dart';
 import '../../../auth/domain/models/auth_event.dart';
-import '../../../auth/presentation/views/sign_in_screen.dart';
 import '../../../profile/presentation/views/profile_screen.dart';
 import '../theme/dashboard_colors.dart';
 import '../view_models/dashboard_navigation_view_model.dart';
@@ -25,8 +25,8 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     if (!mounted || _isLeaving) return;
     _isLeaving = true;
     FocusScope.of(context).unfocus();
-    Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute(builder: (_) => const SignInScreen()),
+    Navigator.of(context).pushNamedAndRemoveUntil(
+      AppRoutes.signIn,
       (route) => false,
     );
   }

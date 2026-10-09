@@ -32,12 +32,16 @@ class WalletCard extends StatelessWidget {
           const Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                'Finsight',
-                style: TextStyle(
-                  color: Color(0xFFB4B2B8),
-                  fontSize: 17,
-                  fontWeight: FontWeight.w500,
+              Expanded(
+                child: Text(
+                  'Expense Tracker',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: Color(0xFFB4B2B8),
+                    fontSize: 17,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ),
               Text(

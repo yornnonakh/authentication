@@ -173,7 +173,7 @@ class _DebitCard extends StatelessWidget {
             top: 24,
             left: 23,
             child: Text(
-              'FinSight',
+              'Expense Tracker',
               style: TextStyle(
                 fontSize: 23,
                 letterSpacing: -.5,

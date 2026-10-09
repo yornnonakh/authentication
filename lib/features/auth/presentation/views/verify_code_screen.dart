@@ -1,7 +1,7 @@
-import 'package:authentication/features/home/presentation/views/dashboard_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../app/app_routes.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/liquid_glass_container.dart';
 import '../../../../core/widgets/primary_button.dart';
@@ -10,7 +10,6 @@ import '../view_models/verification_view_model.dart';
 import '../widgets/auth_background.dart';
 import '../widgets/auth_feedback_snackbar.dart';
 import '../widgets/otp_input_field.dart';
-import 'sign_in_screen.dart';
 
 class VerifyCodeScreen extends StatelessWidget {
   const VerifyCodeScreen({super.key, required this.email});
@@ -34,11 +33,8 @@ class _VerifyCodeForm extends ConsumerWidget {
         .verify();
     if (!context.mounted || result == null) return;
     final authenticated = result == VerificationResult.authenticated;
-    Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute(
-        builder: (_) =>
-            authenticated ? const DashboardScreen() : const SignInScreen(),
-      ),
+    Navigator.of(context).pushNamedAndRemoveUntil(
+      authenticated ? AppRoutes.dashboard : AppRoutes.signIn,
       (route) => false,
     );
     if (!authenticated && context.mounted) {

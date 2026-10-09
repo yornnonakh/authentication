@@ -1,18 +1,16 @@
-import 'package:authentication/features/auth/presentation/views/verify_code_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../app/app_routes.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/custom_text_field.dart';
 import '../../../../core/widgets/liquid_glass_container.dart';
 import '../../../../core/widgets/primary_button.dart';
-import '../../../home/presentation/views/dashboard_screen.dart';
 import '../view_models/sign_up_state.dart';
 import '../view_models/sign_up_view_model.dart';
 import '../widgets/auth_background.dart';
 import '../widgets/auth_feedback_snackbar.dart';
 import '../widgets/social_login_row.dart';
-import 'sign_in_screen.dart';
 
 class SignUpScreen extends StatelessWidget {
   const SignUpScreen({super.key});
@@ -50,14 +48,14 @@ class _SignUpFormState extends ConsumerState<_SignUpForm> {
         );
     if (!mounted || result == null) return;
     if (result == SignUpResult.authenticated) {
-      Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (_) => const DashboardScreen()),
+      Navigator.of(context).pushNamedAndRemoveUntil(
+        AppRoutes.dashboard,
         (route) => false,
       );
     } else {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => VerifyCodeScreen(email: email)),
+      Navigator.of(context).pushNamed(
+        AppRoutes.verifyCode,
+        arguments: email,
       );
     }
   }
@@ -232,11 +230,8 @@ class _SignUpFormState extends ConsumerState<_SignUpForm> {
                     ),
                     GestureDetector(
                       onTap: () {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => const SignInScreen(),
-                          ),
+                        Navigator.of(context).pushReplacementNamed(
+                          AppRoutes.signIn,
                         );
                       },
                       child: const Text(

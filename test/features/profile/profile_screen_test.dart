@@ -1,3 +1,4 @@
+import 'package:authentication/app/app_routes.dart';
 import 'package:authentication/features/auth/data/providers/auth_providers.dart';
 import 'package:authentication/features/auth/domain/models/auth_event.dart';
 import 'package:authentication/features/auth/presentation/views/sign_in_screen.dart';
@@ -27,7 +28,10 @@ void main() {
           profileRepositoryProvider.overrideWithValue(profile),
           authRepositoryProvider.overrideWithValue(auth),
         ],
-        child: const MaterialApp(home: DashboardScreen()),
+        child: MaterialApp(
+          home: const DashboardScreen(),
+          onGenerateRoute: AppRoutes.onGenerateRoute,
+        ),
       ),
     );
     await tester.pumpAndSettle();
