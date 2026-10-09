@@ -1,7 +1,6 @@
 import 'package:authentication/app/app.dart';
 import 'package:authentication/features/auth/data/providers/auth_providers.dart';
 import 'package:authentication/features/auth/presentation/views/sign_in_screen.dart';
-import 'package:authentication/features/auth/presentation/views/sign_up_screen.dart';
 import 'package:authentication/features/home/presentation/views/dashboard_screen.dart';
 import 'package:authentication/features/onboarding/data/providers/onboarding_providers.dart';
 import 'package:authentication/features/onboarding/presentation/views/onboarding_screen.dart';
@@ -56,20 +55,20 @@ void main() {
     },
   );
 
-  testWidgets('get started remembers onboarding and opens registration', (
+  testWidgets('get started remembers onboarding and opens sign in', (
     tester,
   ) async {
     await mount(tester);
     await tester.pumpAndSettle();
     await tester.tap(find.text('Get Started'));
     await tester.pumpAndSettle();
-    expect(find.byType(SignUpScreen), findsOneWidget);
+    expect(find.byType(SignInScreen), findsOneWidget);
     expect(onboarding.completed, isTrue);
     expect(onboarding.saveCalls, 1);
     expect(auth.signOutCalls, 0);
   });
 
-  testWidgets('log in remembers onboarding and skips it on next startup', (
+  testWidgets('log in remembers onboarding and shows onboarding on next startup when unauthenticated', (
     tester,
   ) async {
     await mount(tester);
@@ -82,8 +81,7 @@ void main() {
     await tester.pumpAndSettle();
     await mount(tester);
     await tester.pumpAndSettle();
-    expect(find.byType(SignInScreen), findsOneWidget);
-    expect(find.byType(OnboardingScreen), findsNothing);
+    expect(find.byType(OnboardingScreen), findsOneWidget);
   });
 
   testWidgets('restored account bypasses onboarding even on first launch', (

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../app/app_routes.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/liquid_glass_container.dart';
 import '../../../../core/widgets/primary_button.dart';
@@ -9,7 +10,6 @@ import '../view_models/recovery_state.dart';
 import '../view_models/recovery_view_model.dart';
 import '../widgets/auth_background.dart';
 import '../widgets/auth_feedback_snackbar.dart';
-import 'sign_in_screen.dart';
 
 class ForgotPasswordScreen extends ConsumerStatefulWidget {
   const ForgotPasswordScreen({super.key});
@@ -69,8 +69,8 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
   }
 
   void _openSignIn() {
-    Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute(builder: (_) => const SignInScreen()),
+    Navigator.of(context).pushNamedAndRemoveUntil(
+      AppRoutes.signIn,
       (route) => false,
     );
   }

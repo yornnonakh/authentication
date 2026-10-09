@@ -5,6 +5,7 @@ import 'package:authentication/features/auth/presentation/views/sign_in_screen.d
 import 'package:authentication/features/home/presentation/views/dashboard_screen.dart';
 import 'package:authentication/features/profile/data/providers/profile_providers.dart';
 import 'package:authentication/features/onboarding/data/providers/onboarding_providers.dart';
+import 'package:authentication/features/onboarding/presentation/views/onboarding_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -50,16 +51,21 @@ void main() {
     expect(auth.restoreCalls, 1);
   });
 
-  testWidgets('without a saved session startup shows sign-in', (tester) async {
+  testWidgets('without a saved session startup shows onboarding and transitions to sign-in', (tester) async {
     await mount(tester);
-    expect(find.byType(SignInScreen), findsOneWidget);
+    expect(find.byType(OnboardingScreen), findsOneWidget);
     expect(find.byType(DashboardScreen), findsNothing);
+    await tester.tap(find.text('Get Started'));
+    await tester.pumpAndSettle();
+    expect(find.byType(SignInScreen), findsOneWidget);
   });
 
   testWidgets('hot reload after sign-in keeps the account and selected tab', (
     tester,
   ) async {
     await mount(tester);
+    await tester.tap(find.text('Get Started'));
+    await tester.pumpAndSettle();
     await tester.enterText(
       find.byType(TextFormField).at(0),
       'user@example.com',
@@ -114,6 +120,8 @@ void main() {
     'password recovery does not send the sign-in screen to dashboard',
     (tester) async {
       await mount(tester);
+      await tester.tap(find.text('Get Started'));
+      await tester.pumpAndSettle();
       auth.events.add(
         const AuthEvent(AuthEventType.passwordRecovery, hasSession: true),
       );

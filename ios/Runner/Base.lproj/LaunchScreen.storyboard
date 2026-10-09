@@ -22,7 +22,7 @@
                                     <constraint firstAttribute="height" constant="84" id="mark-height"/>
                                 </constraints>
                             </imageView>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" text="FinSight" textAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="YRO-k0-Ey4">
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" text="Expense Tracker" textAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="YRO-k0-Ey4">
                                 <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="38"/>
                                 <color key="textColor" red="0.067" green="0.110" blue="0.208" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             </label>

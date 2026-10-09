@@ -13,15 +13,21 @@ class FinsightBrand extends StatelessWidget {
     mainAxisSize: MainAxisSize.min,
     children: [
       FinsightMark(size: markSize),
-      const SizedBox(width: 10),
-      Text(
-        'FinSight',
-        textScaler: TextScaler.noScaling,
-        style: TextStyle(
-          fontSize: fontSize,
-          fontWeight: FontWeight.w600,
-          letterSpacing: -.7,
-          color: WelcomeColors.ink,
+      const SizedBox(width: 8),
+      Flexible(
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
+          alignment: Alignment.centerLeft,
+          child: Text(
+            'Expense Tracker',
+            textScaler: TextScaler.noScaling,
+            style: TextStyle(
+              fontSize: fontSize,
+              fontWeight: FontWeight.w600,
+              letterSpacing: -.7,
+              color: WelcomeColors.ink,
+            ),
+          ),
         ),
       ),
     ],
@@ -48,10 +54,10 @@ class _MarkPainter extends CustomPainter {
       ..cubicTo(-s * .52, s * .02, -s * .49, -s * .51, -s * .2, -s * .46)
       ..cubicTo(s * .04, -s * .42, s * .02, -s * .12, -s * .03, -s * .03);
     const colors = [
-      Color(0xFFB8CBFF),
+      Color(0xFFFFB37A),
       WelcomeColors.navy,
-      Color(0xFF9DB8F5),
-      Color(0xFF345395),
+      Color(0xFFFF9A3D),
+      Color(0xFFE06200),
     ];
     for (final color in colors) {
       canvas.drawPath(petal, Paint()..color = color);

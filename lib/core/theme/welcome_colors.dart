@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 
+import 'app_colors.dart';
+
 abstract final class WelcomeColors {
-  static const background = Color(0xFFEDF3FF);
-  static const navy = Color(0xFF213D7A);
-  static const ink = Color(0xFF111C35);
-  static const muted = Color(0xFF7B869A);
-  static const blue = Color(0xFF5875F6);
-  static const paleBlue = Color(0xFFD0DEFF);
+  static const background = AppColors.background;
+  static const navy = AppColors.primaryOrange;
+  static const ink = AppColors.textPrimary;
+  static const muted = AppColors.textSecondary;
+  static const blue = AppColors.primaryOrange;
+  static const paleBlue = Color(0xFFFFE3CC);
 }
