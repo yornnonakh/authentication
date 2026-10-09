@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="84" height="84" viewBox="0 0 100 100">
+  <path fill="#B8CBFF" d="M47 47C-2 52 1-1 30 4C54 8 52 38 47 47Z"/>
+  <path fill="#213D7A" transform="rotate(90 50 50)" d="M47 47C-2 52 1-1 30 4C54 8 52 38 47 47Z"/>
+  <path fill="#9DB8F5" transform="rotate(180 50 50)" d="M47 47C-2 52 1-1 30 4C54 8 52 38 47 47Z"/>
+  <path fill="#345395" transform="rotate(270 50 50)" d="M47 47C-2 52 1-1 30 4C54 8 52 38 47 47Z"/>
+</svg>

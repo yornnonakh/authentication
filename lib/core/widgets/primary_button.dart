@@ -1,18 +1,17 @@
-// lib/core/widgets/primary_button.dart
-
 import 'package:flutter/material.dart';
+
 import '../theme/app_colors.dart';
 
 class PrimaryButton extends StatelessWidget {
   const PrimaryButton({
     super.key,
     required this.label,
-    required this.onPressed,   // now accepts null
+    required this.onPressed, // now accepts null
     this.isLoading = false,
   });
 
   final String label;
-  final VoidCallback? onPressed;   // ← changed to nullable
+  final VoidCallback? onPressed; // ← changed to nullable
   final bool isLoading;
 
   @override
@@ -21,7 +20,7 @@ class PrimaryButton extends StatelessWidget {
       width: double.infinity,
       height: 52,
       child: ElevatedButton(
-        onPressed: isLoading ? null : onPressed,  // disable when loading
+        onPressed: isLoading ? null : onPressed, // disable when loading
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.primaryOrange,
           foregroundColor: AppColors.white,

@@ -1,5 +1,5 @@
-// lib/core/widgets/custom_text_field.dart
 import 'package:flutter/material.dart';
+
 import '../theme/app_colors.dart';
 
 class CustomTextField extends StatelessWidget {
@@ -42,10 +42,15 @@ class CustomTextField extends StatelessWidget {
           keyboardType: keyboardType,
           decoration: InputDecoration(
             hintText: hint,
-            hintStyle: TextStyle(color: AppColors.textSecondary.withOpacity(0.7)),
+            hintStyle: TextStyle(
+              color: AppColors.textSecondary.withValues(alpha: 0.7),
+            ),
             filled: true,
             fillColor: AppColors.white,
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 14,
+            ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: const BorderSide(color: AppColors.border),
@@ -56,11 +61,18 @@ class CustomTextField extends StatelessWidget {
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: AppColors.primaryOrange, width: 1.5),
+              borderSide: const BorderSide(
+                color: AppColors.primaryOrange,
+                width: 1.5,
+              ),
             ),
             suffixIcon: suffixIcon != null
                 ? IconButton(
-                    icon: Icon(suffixIcon, color: AppColors.textSecondary, size: 20),
+                    icon: Icon(
+                      suffixIcon,
+                      color: AppColors.textSecondary,
+                      size: 20,
+                    ),
                     onPressed: onSuffixTap,
                   )
                 : null,

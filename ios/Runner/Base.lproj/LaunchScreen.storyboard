@@ -16,13 +16,29 @@
                     <view key="view" contentMode="scaleToFill" id="Ze5-6b-2t3">
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" image="LaunchImage" translatesAutoresizingMaskIntoConstraints="NO" id="YRO-k0-Ey4">
+                            <imageView opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" image="FinsightMark" translatesAutoresizingMaskIntoConstraints="NO" id="mark-finsight">
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="84" id="mark-width"/>
+                                    <constraint firstAttribute="height" constant="84" id="mark-height"/>
+                                </constraints>
                             </imageView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" text="FinSight" textAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="YRO-k0-Ey4">
+                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="38"/>
+                                <color key="textColor" red="0.067" green="0.110" blue="0.208" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" text="Clarity for your money." textAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="tagline-finsight">
+                                <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                <color key="textColor" red="0.482" green="0.525" blue="0.604" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            </label>
                         </subviews>
-                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="backgroundColor" red="0.929" green="0.953" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
+                            <constraint firstItem="mark-finsight" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="mark-center"/>
+                            <constraint firstItem="mark-finsight" firstAttribute="bottom" secondItem="YRO-k0-Ey4" secondAttribute="top" constant="-22" id="mark-bottom"/>
                             <constraint firstItem="YRO-k0-Ey4" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="1a2-6s-vTC"/>
                             <constraint firstItem="YRO-k0-Ey4" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="4X2-HB-R7a"/>
+                            <constraint firstItem="tagline-finsight" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="tagline-center"/>
+                            <constraint firstItem="tagline-finsight" firstAttribute="top" secondItem="YRO-k0-Ey4" secondAttribute="bottom" constant="14" id="tagline-top"/>
                         </constraints>
                     </view>
                 </viewController>
@@ -32,6 +48,6 @@
         </scene>
     </scenes>
     <resources>
-        <image name="LaunchImage" width="168" height="185"/>
+        <image name="FinsightMark" width="84" height="84"/>
     </resources>
 </document>

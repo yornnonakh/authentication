@@ -1,6 +1,7 @@
-// lib/core/widgets/liquid_glass_container.dart
 import 'dart:ui';
+
 import 'package:flutter/material.dart';
+
 import '../constants/app_constants.dart';
 import '../theme/app_colors.dart';
 
@@ -29,15 +30,17 @@ class LiquidGlassContainer extends StatelessWidget {
         child: Container(
           padding: padding,
           decoration: BoxDecoration(
-            color: AppColors.white.withOpacity(opacity + 0.7), // stronger glass
+            color: AppColors.white.withValues(
+              alpha: opacity + 0.7,
+            ), // stronger glass
             borderRadius: BorderRadius.circular(borderRadius),
             border: Border.all(
-              color: AppColors.white.withOpacity(0.4),
+              color: AppColors.white.withValues(alpha: 0.4),
               width: 1.5,
             ),
             boxShadow: [
               BoxShadow(
-                color: AppColors.black.withOpacity(0.08),
+                color: AppColors.black.withValues(alpha: 0.08),
                 blurRadius: 24,
                 offset: const Offset(0, 8),
               ),

@@ -1,4 +1,3 @@
-// lib/core/constants/app_constants.dart
 class AppConstants {
   AppConstants._(); // private constructor
 
