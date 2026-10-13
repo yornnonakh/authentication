@@ -211,12 +211,12 @@ void main() {
         Theme.of(tester.element(find.byType(HomeScreen))).brightness,
         Brightness.dark,
       );
-      await tester.ensureVisible(find.text('Food & Dining'));
-      await tester.tap(find.text('Food & Dining'));
+      await tester.ensureVisible(find.text('Food & Dining').last);
+      await tester.tap(find.text('Food & Dining').last);
       await tester.pumpAndSettle();
       expect(find.text('Food & Dining · \$4.75 · 100.0%'), findsOneWidget);
-      await tester.ensureVisible(find.text('See all'));
-      await tester.tap(find.text('See all'));
+      await tester.ensureVisible(find.text('See all').first);
+      await tester.tap(find.text('See all').first);
       await tester.pumpAndSettle();
       expect(find.byType(HistoryScreen), findsOneWidget);
       expect(find.text('Coffee'), findsOneWidget);

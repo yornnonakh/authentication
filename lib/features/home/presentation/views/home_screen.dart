@@ -2,6 +2,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/theme/tracker_palette.dart';
+import '../../../../core/widgets/primary_button.dart';
 import '../../../profile/presentation/view_models/profile_view_model.dart';
 import '../../../profile/presentation/widgets/profile_avatar.dart';
 import '../../domain/models/expense_tracker.dart';
@@ -173,20 +174,41 @@ class HomeScreen extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             IconButton(
               tooltip: 'Previous month',
               onPressed: month.year > 2000 || month.month > 1
                   ? () => ref.read(financeMonthProvider.notifier).step(-1)
                   : null,
-              icon: const Icon(Icons.chevron_left_rounded, size: 20),
+              icon: const Icon(Icons.chevron_left_rounded, color: Colors.white, size: 24),
             ),
-            Flexible(
-              child: Text(
-                '${budget > 0 ? 'Budget' : 'Spending'} for ${financeMonthLabel(month)}',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 12, color: colors.onSurfaceVariant),
+            Expanded(
+              child: Column(
+                children: [
+                  const FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text(
+                      'Top Expenses',
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text(
+                      'Month of ${financeMonthLabel(month)}',
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Colors.white.withValues(alpha: 0.8),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
             IconButton(
@@ -194,171 +216,176 @@ class HomeScreen extends ConsumerWidget {
               onPressed: isCurrent
                   ? null
                   : () => ref.read(financeMonthProvider.notifier).step(1),
-              icon: const Icon(Icons.chevron_right_rounded, size: 20),
+              icon: const Icon(Icons.chevron_right_rounded, color: Colors.white, size: 24),
             ),
           ],
         ),
-        Center(
-          child: FittedBox(
-            fit: BoxFit.scaleDown,
-            child: Text(
-              expenseMoney(budget > 0 ? budget : spent),
-              style: const TextStyle(
-                fontSize: 34,
-                fontWeight: FontWeight.w700,
-                letterSpacing: -1,
-              ),
-            ),
-          ),
-        ),
-        const SizedBox(height: 18),
-        Container(
-          padding: const EdgeInsets.fromLTRB(12, 22, 12, 12),
-          decoration: BoxDecoration(
-            color: pace == BudgetPace.overBudget
-                ? const Color(0xFFC65A5F)
-                : TrackerPalette.green,
-            borderRadius: BorderRadius.circular(30),
-          ),
+        const SizedBox(height: 20),
+
+        FinanceCard(
+          padding: const EdgeInsets.all(20),
           child: Column(
             children: [
-              Text(
-                budget > 0
-                    ? spent > budget
-                          ? 'Over Budget'
-                          : 'Remaining Budget'
-                    : 'Monthly spending',
-                style: const TextStyle(fontSize: 12, color: Colors.white),
-              ),
-              const SizedBox(height: 6),
-              FittedBox(
-                fit: BoxFit.scaleDown,
-                child: Text(
-                  expenseMoney(budget > 0 ? (budget - spent).abs() : spent),
-                  style: const TextStyle(
-                    fontSize: 30,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 18),
-              FinanceCard(
-                padding: const EdgeInsets.fromLTRB(18, 8, 18, 18),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Row(
-                      children: [
-                        const Expanded(
-                          child: Text(
-                            'Monthly budget',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                            ),
+              LayoutBuilder(
+                builder: (context, constraints) {
+                  final itemWidth = (constraints.maxWidth - 14) / 2;
+                  final defaultCats = topCategories.isNotEmpty
+                      ? topCategories
+                      : [
+                          const MapEntry('Lifestyle', 149254),
+                          const MapEntry('Travel', 267494),
+                          const MapEntry('Coffee & Tea', 54285),
+                          const MapEntry('Food Order', 79412),
+                        ];
+                  return Wrap(
+                    spacing: 14,
+                    runSpacing: 14,
+                    children: [
+                      for (final category in defaultCats.take(4))
+                        SizedBox(
+                          width: itemWidth,
+                          height: 135,
+                          child: _CategoryTile(
+                            category: category.key,
+                            cents: category.value,
+                            percentage: spent > 0
+                                ? (category.value / spent * 100).round()
+                                : 25,
+                            onTap: () => _ledger(context, ref, category: category.key),
                           ),
                         ),
-                        TextButton(
-                          onPressed: canAdd
-                              ? () => showExpenseEntrySheet(
-                                  context,
-                                  month,
-                                  budget: true,
-                                )
-                              : null,
+                    ],
+                  );
+                },
+              ),
+              const SizedBox(height: 22),
+              Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      children: [
+                        Text(
+                          'Total Expense',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                            color: colors.onSurfaceVariant,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        FittedBox(
+                          fit: BoxFit.scaleDown,
                           child: Text(
-                            budget == 0 ? 'Set budget' : 'Edit',
-                            style: const TextStyle(fontSize: 12),
+                            expenseMoney(spent),
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w800,
+                              color: colors.onSurface,
+                              letterSpacing: -0.5,
+                            ),
                           ),
                         ),
                       ],
                     ),
-                    if (budget == 0)
-                      Text(
-                        'Set a limit and make room for what matters.',
-                        style: TextStyle(
-                          color: colors.onSurfaceVariant,
-                          fontSize: 12,
+                  ),
+                  Container(width: 1, height: 36, color: colors.outlineVariant),
+                  Expanded(
+                    child: Column(
+                      children: [
+                        Text(
+                          'Remaining Budget',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                            color: colors.onSurfaceVariant,
+                          ),
                         ),
-                      )
-                    else ...[
-                      Slider(
-                        key: const Key('monthly-budget-slider'),
-                        label: expenseMoney(budget),
-                        min: 1,
-                        max: sliderMaximum,
-                        value: budget.toDouble().clamp(1, sliderMaximum),
-                        onChanged: canAdd && !limit.isSaving
-                            ? (value) => ref
-                                  .read(budgetLimitProvider(month).notifier)
-                                  .adjust(value.round())
-                            : null,
-                        onChangeEnd: canAdd && !limit.isSaving
-                            ? (_) => ref
-                                  .read(budgetLimitProvider(month).notifier)
-                                  .commit()
-                            : null,
-                      ),
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(6),
-                        child: LinearProgressIndicator(
-                          value: (spent / budget).clamp(0.0, 1.0),
-                          minHeight: 6,
-                          color: paceColor,
-                          backgroundColor: colors.surfaceContainerHighest,
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      Wrap(
-                        alignment: WrapAlignment.spaceBetween,
-                        spacing: 8,
-                        runSpacing: 6,
-                        children: [
-                          Text(
-                            switch (pace) {
-                              BudgetPace.overBudget => 'Over Budget',
-                              BudgetPace.approachingLimit =>
-                                'Approaching Limit',
-                              _ => 'On Pace',
-                            },
+                        const SizedBox(height: 4),
+                        FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Text(
+                            expenseMoney(budget > 0 ? (budget - spent).abs() : budget),
                             style: TextStyle(
-                              color: paceColor,
-                              fontSize: 11,
-                              fontWeight: FontWeight.w600,
+                              fontSize: 20,
+                              fontWeight: FontWeight.w800,
+                              color: colors.onSurface,
+                              letterSpacing: -0.5,
                             ),
                           ),
-                          Text(
-                            spent > budget
-                                ? '${expenseMoney(spent - budget)} over budget'
-                                : '${expenseMoney(budget - spent)} left to spend',
-                            style: TextStyle(
-                              color: colors.onSurfaceVariant,
-                              fontSize: 11,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                    if (limit.isSaving)
-                      const Padding(
-                        padding: EdgeInsets.only(top: 8),
-                        child: Text(
-                          'Saving budget…',
-                          style: TextStyle(fontSize: 11),
                         ),
-                      ),
-                    if (limit.error != null)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 8),
-                        child: Text(
-                          limit.error!,
-                          style: TextStyle(color: colors.error, fontSize: 11),
-                        ),
-                      ),
-                  ],
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              SizedBox(
+                width: 200,
+                height: 46,
+                child: PrimaryButton(
+                  label: 'VIEW ALL',
+                  onPressed: () => _ledger(context, ref),
                 ),
               ),
+              const SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Text(
+                      'Monthly budget',
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: colors.onSurfaceVariant,
+                      ),
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: canAdd
+                        ? () => showExpenseEntrySheet(context, month, budget: true)
+                        : null,
+                    child: Text(
+                      budget == 0 ? 'Set budget' : 'Edit budget',
+                      style: const TextStyle(fontSize: 12),
+                    ),
+                  ),
+                ],
+              ),
+              if (budget > 0) ...[
+                Slider(
+                  key: const Key('monthly-budget-slider'),
+                  label: expenseMoney(budget),
+                  min: 1,
+                  max: sliderMaximum,
+                  value: budget.toDouble().clamp(1, sliderMaximum),
+                  onChanged: canAdd && !limit.isSaving
+                      ? (value) => ref.read(budgetLimitProvider(month).notifier).adjust(value.round())
+                      : null,
+                  onChangeEnd: canAdd && !limit.isSaving
+                      ? (_) => ref.read(budgetLimitProvider(month).notifier).commit()
+                      : null,
+                ),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(6),
+                  child: LinearProgressIndicator(
+                    value: (spent / budget).clamp(0.0, 1.0),
+                    minHeight: 6,
+                    color: paceColor,
+                    backgroundColor: colors.surfaceContainerHighest,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  spent > budget
+                      ? '${expenseMoney(spent - budget)} over budget'
+                      : '${expenseMoney(budget - spent)} left to spend',
+                  style: TextStyle(
+                    color: colors.onSurfaceVariant,
+                    fontSize: 11,
+                  ),
+                ),
+              ],
             ],
           ),
         ),
@@ -626,64 +653,88 @@ class _CategoryTile extends StatelessWidget {
   final String category;
   final int cents, percentage;
   final VoidCallback onTap;
+
+  Color _cardColor(String cat) {
+    final name = cat.toLowerCase();
+    if (name.contains('life') || name.contains('cloth') || name.contains('style')) {
+      return const Color(0xFFB8A2FB);
+    }
+    if (name.contains('travel') || name.contains('trans') || name.contains('car')) {
+      return const Color(0xFFFFB2A2);
+    }
+    if (name.contains('coffee') || name.contains('drink') || name.contains('food')) {
+      return const Color(0xFFFFB3D6);
+    }
+    return const Color(0xFFA2E8DD);
+  }
+
   @override
   Widget build(BuildContext context) {
-    final color = FinanceStyle.categoryColor(category);
+    final bgColor = _cardColor(category);
+    final icon = FinanceStyle.categoryIcon(category);
+
     return Material(
-      color: Theme.of(context).colorScheme.surfaceContainerLow,
-      borderRadius: BorderRadius.circular(22),
+      color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(22),
+        borderRadius: BorderRadius.circular(24),
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 20),
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(22),
-            border: Border.all(
-              color: Theme.of(context).colorScheme.outlineVariant,
-            ),
+            color: bgColor,
+            borderRadius: BorderRadius.circular(24),
+            boxShadow: [
+              BoxShadow(
+                color: bgColor.withValues(alpha: 0.35),
+                blurRadius: 12,
+                offset: const Offset(0, 6),
+              ),
+            ],
           ),
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
             children: [
               Container(
-                width: 48,
-                height: 48,
-                decoration: BoxDecoration(shape: BoxShape.circle, color: color),
-                child: Icon(
-                  FinanceStyle.categoryIcon(category),
-                  color: TrackerPalette.ink,
-                  size: 23,
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.35),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(icon, color: Colors.white, size: 18),
+              ),
+              const SizedBox(height: 6),
+              FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(
+                  category[0].toUpperCase() + category.substring(1),
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
                 ),
               ),
-              const SizedBox(height: 14),
-              Text(
-                category.toUpperCase(),
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontSize: 10,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              const SizedBox(height: 7),
-              Wrap(
-                alignment: WrapAlignment.center,
-                spacing: 6,
-                children: [
-                  Text(
-                    expenseMoney(cents),
+              const SizedBox(height: 4),
+              FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.25),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    '${expenseMoney(cents)} · $percentage%',
                     style: const TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  Text(
-                    '• $percentage%',
-                    style: TextStyle(
                       fontSize: 10,
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
                     ),
                   ),
-                ],
+                ),
               ),
             ],
           ),

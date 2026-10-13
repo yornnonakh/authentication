@@ -151,16 +151,11 @@ class _SignUpFormState extends ConsumerState<_SignUpForm> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 12),
-                    Center(
-                      child: SizedBox(
-                        width: 190,
-                        child: PrimaryButton(
-                          label: 'Sign Up',
-                          isLoading: _isLoading,
-                          onPressed: _isLoading ? null : _handleSignUp,
-                        ),
-                      ),
+                    const SizedBox(height: 16),
+                    PrimaryButton(
+                      label: 'Sign Up',
+                      isLoading: _isLoading,
+                      onPressed: _isLoading ? null : _handleSignUp,
                     ),
                   ],
                 ),

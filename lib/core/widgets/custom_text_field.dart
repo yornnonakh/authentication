@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class CustomTextField extends StatelessWidget {
@@ -12,27 +13,91 @@ class CustomTextField extends StatelessWidget {
     this.suffixIcon,
     this.onSuffixTap,
   });
+
   final String label, hint;
   final TextEditingController? controller;
   final bool obscureText;
   final TextInputType keyboardType;
   final IconData? prefixIcon, suffixIcon;
   final VoidCallback? onSuffixTap;
+
   @override
-  Widget build(BuildContext context) => TextFormField(
-    controller: controller,
-    obscureText: obscureText,
-    keyboardType: keyboardType,
-    decoration: InputDecoration(
-      labelText: label,
-      hintText: hint,
-      prefixIcon: prefixIcon == null ? null : Icon(prefixIcon, size: 20),
-      suffixIcon: suffixIcon == null
-          ? null
-          : IconButton(
-              icon: Icon(suffixIcon, size: 20),
-              onPressed: onSuffixTap,
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (label.isNotEmpty) ...[
+          Padding(
+            padding: const EdgeInsets.only(left: 8, bottom: 6),
+            child: Text(
+              label,
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: colors.onSurface.withValues(alpha: 0.8),
+                letterSpacing: -0.2,
+              ),
             ),
-    ),
-  );
+          ),
+        ],
+        TextFormField(
+          controller: controller,
+          obscureText: obscureText,
+          keyboardType: keyboardType,
+          style: TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.w500,
+            color: colors.onSurface,
+          ),
+          decoration: InputDecoration(
+            hintText: hint,
+            hintStyle: TextStyle(
+              fontSize: 14,
+              color: colors.onSurfaceVariant.withValues(alpha: 0.6),
+            ),
+            filled: true,
+            fillColor: colors.surfaceContainer,
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 20,
+              vertical: 16,
+            ),
+            prefixIcon: prefixIcon == null
+                ? null
+                : Icon(
+                    prefixIcon,
+                    size: 20,
+                    color: colors.onSurfaceVariant.withValues(alpha: 0.8),
+                  ),
+            suffixIcon: suffixIcon == null
+                ? null
+                : CupertinoButton(
+                    padding: EdgeInsets.zero,
+                    onPressed: onSuffixTap,
+                    child: Icon(
+                      suffixIcon,
+                      size: 20,
+                      color: colors.onSurfaceVariant.withValues(alpha: 0.8),
+                    ),
+                  ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(24),
+              borderSide: BorderSide.none,
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(24),
+              borderSide: BorderSide.none,
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(24),
+              borderSide: BorderSide(
+                color: colors.primary,
+                width: 1.5,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
 }

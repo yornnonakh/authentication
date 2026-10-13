@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class OtpInputField extends StatefulWidget {
-  const OtpInputField({super.key, required this.onChanged, this.length = 4});
+  const OtpInputField({super.key, required this.onChanged, this.length = 6});
 
   final ValueChanged<String> onChanged;
   final int length;
@@ -47,6 +47,7 @@ class _OtpInputFieldState extends State<OtpInputField> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: List.generate(widget.length, (index) {
@@ -61,31 +62,35 @@ class _OtpInputFieldState extends State<OtpInputField> {
                 textAlign: TextAlign.center,
                 keyboardType: TextInputType.number,
                 maxLength: 1,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 22,
-                  fontWeight: FontWeight.w600,
+                  fontWeight: FontWeight.w700,
+                  color: colors.onSurface,
                 ),
                 inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 decoration: InputDecoration(
                   counterText: '',
                   filled: true,
-                  fillColor: Theme.of(context).colorScheme.surfaceContainerLow,
+                  fillColor: colors.surfaceContainer,
+                  contentPadding: EdgeInsets.zero,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide(
-                      color: Theme.of(context).colorScheme.outlineVariant,
+                      color: colors.outline.withValues(alpha: 0.2),
+                      width: 0.5,
                     ),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide(
-                      color: Theme.of(context).colorScheme.outlineVariant,
+                      color: colors.outline.withValues(alpha: 0.2),
+                      width: 0.5,
                     ),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide(
-                      color: Theme.of(context).colorScheme.primary,
+                      color: colors.primary,
                       width: 1.5,
                     ),
                   ),

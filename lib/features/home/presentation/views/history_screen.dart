@@ -83,6 +83,8 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
       slivers: [
         SliverAppBar(
           pinned: true,
+          backgroundColor: Colors.transparent,
+          surfaceTintColor: Colors.transparent,
           automaticallyImplyLeading: Navigator.of(context).canPop(),
           title: const Text('Transactions'),
           actions: [

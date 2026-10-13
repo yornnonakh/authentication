@@ -149,16 +149,11 @@ class _SignInFormState extends ConsumerState<_SignInForm> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 8),
-                    Center(
-                      child: SizedBox(
-                        width: 190,
-                        child: PrimaryButton(
-                          label: 'Sign In',
-                          isLoading: _isEmailLoading,
-                          onPressed: _isLoading ? null : _handleSignIn,
-                        ),
-                      ),
+                    const SizedBox(height: 12),
+                    PrimaryButton(
+                      label: 'Sign In',
+                      isLoading: _isEmailLoading,
+                      onPressed: _isLoading ? null : _handleSignIn,
                     ),
                   ],
                 ),
