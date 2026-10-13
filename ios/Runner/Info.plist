@@ -17,7 +17,7 @@
     <string>$(DEVELOPMENT_LANGUAGE)</string>
 
     <key>CFBundleDisplayName</key>
-    <string>Authentication</string>
+    <string>Expense Tracker</string>
 
     <key>CFBundleExecutable</key>
     <string>$(EXECUTABLE_NAME)</string>

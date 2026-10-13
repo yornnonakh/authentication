@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import '../../../../core/theme/app_colors.dart';
-
 class OtpInputField extends StatefulWidget {
   const OtpInputField({super.key, required this.onChanged, this.length = 4});
 
@@ -71,19 +69,23 @@ class _OtpInputFieldState extends State<OtpInputField> {
                 decoration: InputDecoration(
                   counterText: '',
                   filled: true,
-                  fillColor: AppColors.white,
+                  fillColor: Theme.of(context).colorScheme.surfaceContainerLow,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(color: AppColors.border),
+                    borderSide: BorderSide(
+                      color: Theme.of(context).colorScheme.outlineVariant,
+                    ),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(color: AppColors.border),
+                    borderSide: BorderSide(
+                      color: Theme.of(context).colorScheme.outlineVariant,
+                    ),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(
-                      color: AppColors.primaryOrange,
+                    borderSide: BorderSide(
+                      color: Theme.of(context).colorScheme.primary,
                       width: 1.5,
                     ),
                   ),

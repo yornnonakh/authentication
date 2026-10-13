@@ -1,6 +1,6 @@
-# Insightlancer
+# Finsight
 
-Flutter authentication and wallet UI using MVVM and Riverpod.
+Flutter authentication and expense tracker UI using MVVM and Riverpod.
 
 ## Folder structure
 
@@ -32,6 +32,7 @@ lib/
       domain/{models,repositories}/
       presentation/{view_models,views,widgets}/
 test/
+  features/home/                 # Finance models, storage, filters and UI flows
   features/profile/              # Profile, save, logout and navigation tests
   features/auth/                 # Session restoration and hot reload tests
   features/onboarding/           # First launch, completion, navigation and layout
@@ -60,13 +61,55 @@ Opening the browser alone does not count as authentication. Starting recovery
 or registration cancels pending Google navigation. Recovery signs out after a
 password update or when leaving the password step.
 
-The shared `DashboardScreen` owns the gradient background and floating navigation.
-`dashboardNavigationViewModelProvider` switches home, portfolio and profile tabs while
-preserving their scroll positions. Home and portfolio watch the same
-`homeViewModelProvider`. Their existing
-sample content comes from `SampleDashboardRepository`. Replace it through
-`dashboardRepositoryProvider` when a dashboard API is available. Financial
-values remain demo display strings.
+## Personal finance
+
+`DashboardScreen` uses a floating pill navigation bar for Home, History, Settings,
+Profile and a quick-add action. The UI follows the supplied Expense Tracker
+reference: cream headers, slate backgrounds, coral pill buttons, rounded white
+panels, a green budget card and pastel category tiles. `TrackerPalette` and
+`AppTheme` provide shared light/dark styling. Account, onboarding, recovery,
+entry, scanner, details, history and settings use the same visual language. System
+appearance is the default; Settings can save a light/dark override. Transaction
+rows open a detail screen with a Hero transition and an edit action.
+
+The dashboard shows all-time Total Earnings, Total Spending and Available Balance
+with green/red balance styling. A seven-day bar chart shows daily spending and
+today/yesterday totals from saved transactions. Its month selector controls monthly totals,
+budgets, recent transactions and the interactive `fl_chart` spending donut.
+The budget slider updates pacing while dragging and saves when released; Edit
+accepts an exact amount. Budget pacing is On Pace below 80%, Approaching Limit at 80–100%, and Over Budget
+above 100%. Amounts display in USD using `intl`; sums use integer cents to avoid
+floating-point drift.
+
+`Transaction` is immutable and includes ID, title, double amount, date, type,
+contextual category and optional notes. The form rejects empty descriptions,
+nonpositive amounts, more than two decimal places and future dates. Expense and
+income categories are defined in `TransactionCategories`.
+`transactionFormProvider` handles validation, saving and receipt scanning.
+“Scan Receipt (AI)” intentionally simulates a two-second scan and populates
+Starbucks / $4.75 / Food & Dining. No camera permission or AI service is used.
+
+History uses a pinned search app bar, fuzzy title matching, type chips, category
+filters and sticky month/year headers. Records sort newest first. Swipe left
+and tap Delete in the confirmation snackbar to remove a record. Ignoring the
+snackbar keeps the transaction. Failed writes preserve records and offer retry.
+
+`expenseViewModelProvider` loads and saves through `expenseRepositoryProvider`.
+`PreferencesExpenseRepository` stores JSON in shared preferences per profile ID.
+It migrates the previous `finsight.expenses.v1` records to `finsight.finance.v2`
+without losing transactions or monthly budgets. New accounts start empty.
+Data persists on the same device; cloud sync is not implemented.
+
+Settings exports all transactions, including notes, to CSV using `csv` and the
+native `share_plus` sheet (with a download fallback on web). The export quotes
+commas/newlines and protects user-entered spreadsheet formula cells. Reset All
+Data requires two dialogs and typing RESET. It clears this account’s transactions,
+budgets and legacy finance backup, keeping the account profile and other accounts.
+
+Feature logic stays in Riverpod view models and repository/service interfaces;
+views handle controllers, navigation and presentation. Finance tests cover local
+migration, account isolation, exact totals, pacing thresholds, filtering, scanning,
+edit/delete, reset confirmation, CSV export and layouts in dark mode.
 
 ## User profiles and logout
 
@@ -79,7 +122,6 @@ full name, optional contact phone, and optional bio uses Supabase Auth user
 metadata (`full_name`, `contact_phone`, `bio`), so no extra database table or
 migration is required. Email displays the authenticated account address.
 Contact phone is a profile field and does not change phone authentication.
-The investment and wallet values still come from the sample dashboard repository.
 
 `profileViewModelProvider` validates input and exposes saving status and feedback.
 `logoutViewModelProvider` signs out through the auth repository. Successful logout

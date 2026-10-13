@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../app/app_routes.dart';
-import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/custom_text_field.dart';
 import '../../../../core/widgets/liquid_glass_container.dart';
 import '../../../../core/widgets/primary_button.dart';
+import '../../../../core/widgets/tracker_backdrop.dart';
 import '../view_models/sign_up_state.dart';
 import '../view_models/sign_up_view_model.dart';
 import '../widgets/auth_background.dart';
@@ -48,15 +48,11 @@ class _SignUpFormState extends ConsumerState<_SignUpForm> {
         );
     if (!mounted || result == null) return;
     if (result == SignUpResult.authenticated) {
-      Navigator.of(context).pushNamedAndRemoveUntil(
-        AppRoutes.dashboard,
-        (route) => false,
-      );
+      Navigator.of(
+        context,
+      ).pushNamedAndRemoveUntil(AppRoutes.dashboard, (route) => false);
     } else {
-      Navigator.of(context).pushNamed(
-        AppRoutes.verifyCode,
-        arguments: email,
-      );
+      Navigator.of(context).pushNamed(AppRoutes.verifyCode, arguments: email);
     }
   }
 
@@ -77,180 +73,131 @@ class _SignUpFormState extends ConsumerState<_SignUpForm> {
     ) {
       if (next != null) showAuthFeedback(context, next);
     });
-    return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-      child: Column(
-        children: [
-          const SizedBox(height: 24),
-          LiquidGlassContainer(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Title
-                const Text(
-                  'Create Account',
-                  style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.textPrimary,
-                  ),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  'Fill your information below or register\nwith your social account.',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: AppColors.textSecondary,
-                    height: 1.4,
-                  ),
-                ),
-                const SizedBox(height: 24),
-
-                // Name
-                CustomTextField(
-                  label: 'Name',
-                  hint: 'Esther Howard',
-                  controller: _nameController,
-                  prefixIcon: Icons.person_outline_rounded,
-                ),
-                const SizedBox(height: 16),
-
-                // Email
-                CustomTextField(
-                  label: 'Email',
-                  hint: 'example@gmail.com',
-                  controller: _emailController,
-                  keyboardType: TextInputType.emailAddress,
-                  prefixIcon: Icons.email_outlined,
-                ),
-                const SizedBox(height: 16),
-
-                // Password
-                CustomTextField(
-                  label: 'Password',
-                  hint: '••••••••',
-                  controller: _passwordController,
-                  obscureText: _obscurePassword,
-                  prefixIcon: Icons.lock_outline_rounded,
-                  suffixIcon: _obscurePassword
-                      ? Icons.visibility_off
-                      : Icons.visibility,
-                  onSuffixTap: () {
-                    ref
-                        .read(signUpViewModelProvider.notifier)
-                        .togglePasswordVisibility();
-                  },
-                ),
-                const SizedBox(height: 12),
-
-                // Terms Checkbox
-                Row(
-                  children: [
-                    SizedBox(
-                      width: 24,
-                      height: 24,
-                      child: Checkbox(
-                        value: _agreeTerms,
-                        activeColor: AppColors.primaryOrange,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        onChanged: (v) {
-                          ref
-                              .read(signUpViewModelProvider.notifier)
-                              .setAgreeTerms(v ?? false);
-                        },
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: RichText(
-                        text: TextSpan(
-                          style: TextStyle(
-                            color: AppColors.textSecondary,
-                            fontSize: 13,
-                          ),
-                          children: const [
-                            TextSpan(text: 'Agree with '),
-                            TextSpan(
-                              text: 'Terms & Condition',
-                              style: TextStyle(
-                                color: AppColors.primaryOrange,
-                                fontWeight: FontWeight.w600,
-                                decoration: TextDecoration.underline,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 20),
-
-                // Sign Up Button
-                PrimaryButton(
-                  label: 'Sign Up',
-                  isLoading: _isLoading,
-                  onPressed: _isLoading ? null : () => _handleSignUp(),
-                ),
-                const SizedBox(height: 24),
-
-                // Divider
-                Row(
-                  children: [
-                    const Expanded(child: Divider()),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
-                      child: Text(
-                        'Or sign up with',
-                        style: TextStyle(
-                          color: AppColors.textSecondary,
-                          fontSize: 13,
-                        ),
-                      ),
-                    ),
-                    const Expanded(child: Divider()),
-                  ],
-                ),
-                const SizedBox(height: 20),
-
-                // Social Login
-                SocialLoginRow(
-                  onApple: () {},
-                  onGoogle: () {},
-                  onFacebook: () {},
-                ),
-                const SizedBox(height: 24),
-
-                // Already have account
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+    final colors = Theme.of(context).colorScheme;
+    return Center(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 460),
+          child: Column(
+            children: [
+              const TrackerCoinMark(size: 64),
+              const SizedBox(height: 28),
+              LiquidGlassContainer(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     Text(
-                      'Already have an account? ',
-                      style: TextStyle(color: AppColors.textSecondary),
+                      'Register',
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.of(context).pushReplacementNamed(
-                          AppRoutes.signIn,
-                        );
-                      },
-                      child: const Text(
-                        'Sign In',
-                        style: TextStyle(
-                          color: AppColors.primaryOrange,
-                          fontWeight: FontWeight.w600,
+                    const SizedBox(height: 8),
+                    Text(
+                      'If you don’t have an account',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: colors.onSurfaceVariant,
+                      ),
+                    ),
+                    const SizedBox(height: 26),
+                    CustomTextField(
+                      label: 'Name',
+                      hint: 'Full name',
+                      controller: _nameController,
+                    ),
+                    const SizedBox(height: 16),
+                    CustomTextField(
+                      label: 'Email',
+                      hint: 'Email address',
+                      controller: _emailController,
+                      keyboardType: TextInputType.emailAddress,
+                    ),
+                    const SizedBox(height: 16),
+                    CustomTextField(
+                      label: 'Password',
+                      hint: 'Password',
+                      controller: _passwordController,
+                      obscureText: _obscurePassword,
+                      suffixIcon: _obscurePassword
+                          ? Icons.visibility_off_outlined
+                          : Icons.visibility_outlined,
+                      onSuffixTap: () => ref
+                          .read(signUpViewModelProvider.notifier)
+                          .togglePasswordVisibility(),
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        Checkbox(
+                          value: _agreeTerms,
+                          onChanged: _isLoading
+                              ? null
+                              : (value) => ref
+                                    .read(signUpViewModelProvider.notifier)
+                                    .setAgreeTerms(value ?? false),
+                        ),
+                        Expanded(
+                          child: Text(
+                            'Agree with Terms & Condition',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: colors.onSurfaceVariant,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    Center(
+                      child: SizedBox(
+                        width: 190,
+                        child: PrimaryButton(
+                          label: 'Sign Up',
+                          isLoading: _isLoading,
+                          onPressed: _isLoading ? null : _handleSignUp,
                         ),
                       ),
                     ),
                   ],
                 ),
-              ],
-            ),
+              ),
+              const SizedBox(height: 20),
+              Text(
+                'Or sign up with',
+                style: TextStyle(color: colors.onSurfaceVariant, fontSize: 12),
+              ),
+              const SizedBox(height: 12),
+              SocialLoginRow(),
+              const SizedBox(height: 12),
+              Wrap(
+                alignment: WrapAlignment.center,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: [
+                  Text(
+                    'Already a user?',
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: colors.onSurfaceVariant,
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: _isLoading
+                        ? null
+                        : () => Navigator.of(context).pushNamedAndRemoveUntil(
+                            AppRoutes.signIn,
+                            (route) => false,
+                          ),
+                    child: const Text('Sign In'),
+                  ),
+                ],
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

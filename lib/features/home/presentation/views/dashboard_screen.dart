@@ -1,41 +1,41 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import '../../../../app/app_routes.dart';
 import '../../../auth/data/providers/auth_providers.dart';
 import '../../../auth/domain/models/auth_event.dart';
 import '../../../profile/presentation/views/profile_screen.dart';
-import '../theme/dashboard_colors.dart';
 import '../view_models/dashboard_navigation_view_model.dart';
-import '../widgets/bottom_nav_bar.dart';
 import 'home_screen.dart';
-import 'portfolio_screen.dart';
+import 'history_screen.dart';
+import 'finance_settings_screen.dart';
+import '../../../../core/widgets/tracker_backdrop.dart';
+import '../../../../core/theme/tracker_palette.dart';
+import '../widgets/bottom_nav_bar.dart';
+import '../widgets/expense_entry_sheet.dart';
+import '../view_models/expense_view_model.dart';
 
 class DashboardScreen extends ConsumerStatefulWidget {
   const DashboardScreen({super.key});
-
   @override
   ConsumerState<DashboardScreen> createState() => _DashboardScreenState();
 }
 
 class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   bool _isLeaving = false;
-
   void _openSignIn() {
     if (!mounted || _isLeaving) return;
     _isLeaving = true;
     FocusScope.of(context).unfocus();
-    Navigator.of(context).pushNamedAndRemoveUntil(
-      AppRoutes.signIn,
-      (route) => false,
-    );
+    Navigator.of(
+      context,
+    ).pushNamedAndRemoveUntil(AppRoutes.signIn, (route) => false);
   }
 
   @override
   Widget build(BuildContext context) {
     final tab = ref.watch(dashboardNavigationViewModelProvider);
     final navigation = ref.read(dashboardNavigationViewModelProvider.notifier);
-    ref.listen(authEventsProvider, (previous, next) {
+    ref.listen(authEventsProvider, (_, next) {
       next.whenData((event) {
         if (event.type == AuthEventType.signedOut) _openSignIn();
       });
@@ -43,57 +43,55 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     ref.listen(dashboardNavigationViewModelProvider, (previous, next) {
       if (previous != next) ScaffoldMessenger.of(context).hideCurrentSnackBar();
     });
-    final navIndex = tab == DashboardTab.profile ? 3 : tab.index;
     return PopScope(
       canPop: tab == DashboardTab.home,
       onPopInvokedWithResult: (didPop, result) {
         if (!didPop) navigation.showHome();
       },
       child: Scaffold(
-        backgroundColor: const Color(0xFFF3F2FB),
-        body: DecoratedBox(
-          decoration: const BoxDecoration(gradient: DashboardColors.background),
-          child: SizedBox.expand(
+        backgroundColor: TrackerPalette.backdrop(context),
+        body: TrackerBackdrop(
+          child: SafeArea(
+            bottom: false,
             child: Align(
               alignment: Alignment.topCenter,
               child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 480),
-                child: Stack(
+                constraints: const BoxConstraints(maxWidth: 960),
+                child: IndexedStack(
+                  index: tab.index,
                   children: [
-                    SafeArea(
-                      bottom: false,
-                      child: IndexedStack(
-                        index: tab.index,
-                        children: [
-                          const HomeScreen(),
-                          const PortfolioScreen(),
-                          ProfileScreen(onLoggedOut: _openSignIn),
-                        ],
+                    HeroMode(
+                      enabled: tab == DashboardTab.home,
+                      child: TickerMode(
+                        enabled: tab == DashboardTab.home,
+                        child: const HomeScreen(),
                       ),
                     ),
-                    Positioned(
-                      left: 0,
-                      right: 0,
-                      bottom: 0,
-                      child: SafeArea(
-                        top: false,
-                        minimum: const EdgeInsets.only(bottom: 16),
-                        child: Center(
-                          child: FractionallySizedBox(
-                            widthFactor: 0.82,
-                            child: AppBottomNavBar(
-                              currentIndex: navIndex,
-                              onTap: navigation.select,
-                            ),
-                          ),
-                        ),
+                    HeroMode(
+                      enabled: tab == DashboardTab.history,
+                      child: TickerMode(
+                        enabled: tab == DashboardTab.history,
+                        child: const HistoryScreen(),
                       ),
+                    ),
+                    TickerMode(
+                      enabled: tab == DashboardTab.settings,
+                      child: const FinanceSettingsScreen(),
+                    ),
+                    TickerMode(
+                      enabled: tab == DashboardTab.profile,
+                      child: ProfileScreen(onLoggedOut: _openSignIn),
                     ),
                   ],
                 ),
               ),
             ),
           ),
+        ),
+        bottomNavigationBar: AppBottomNavBar(
+          currentIndex: tab.index,onTap: navigation.select,
+          onAdd: ref.watch(expenseViewModelProvider).hasValue
+            ? () => showExpenseEntrySheet(context,ref.read(financeMonthProvider)) : null,
         ),
       ),
     );

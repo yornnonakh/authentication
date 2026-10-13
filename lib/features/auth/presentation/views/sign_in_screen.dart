@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../app/app_routes.dart';
-import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/custom_text_field.dart';
 import '../../../../core/widgets/liquid_glass_container.dart';
 import '../../../../core/widgets/primary_button.dart';
+import '../../../../core/widgets/tracker_backdrop.dart';
 import '../view_models/auth_feedback.dart';
 import '../view_models/sign_in_state.dart';
 import '../view_models/sign_in_view_model.dart';
@@ -17,7 +17,7 @@ class SignInScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const AuthBackground(child: _SignInForm());
+    return const AuthBackground(isSignIn: true, child: _SignInForm());
   }
 }
 
@@ -54,10 +54,9 @@ class _SignInFormState extends ConsumerState<_SignInForm> {
   }
 
   void _navigateToHome() {
-    Navigator.of(context).pushNamedAndRemoveUntil(
-      AppRoutes.dashboard,
-      (route) => false,
-    );
+    Navigator.of(
+      context,
+    ).pushNamedAndRemoveUntil(AppRoutes.dashboard, (route) => false);
   }
 
   void _showSnackBar(String message) =>
@@ -81,229 +80,139 @@ class _SignInFormState extends ConsumerState<_SignInForm> {
         _navigateToHome();
       }
     });
-    return SafeArea(
-      child: Center(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 460),
-            child: Column(
-              children: [
-                const SizedBox(height: 40),
-
-                LiquidGlassContainer(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // ==================================
-                      // TITLE
-                      // ==================================
-                      const Text(
-                        'Welcome Back',
-                        style: TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.textPrimary,
+    final colors = Theme.of(context).colorScheme;
+    return Center(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 460),
+          child: Column(
+            children: [
+              const TrackerCoinMark(size: 64),
+              const SizedBox(height: 28),
+              LiquidGlassContainer(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text(
+                      'Sign in',
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'If you already registered',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: colors.onSurfaceVariant,
+                      ),
+                    ),
+                    const SizedBox(height: 28),
+                    CustomTextField(
+                      label: 'Email',
+                      hint: 'username / email',
+                      controller: _emailController,
+                      keyboardType: TextInputType.emailAddress,
+                    ),
+                    const SizedBox(height: 16),
+                    CustomTextField(
+                      label: 'Password',
+                      hint: 'Password',
+                      controller: _passwordController,
+                      obscureText: _obscurePassword,
+                      suffixIcon: _obscurePassword
+                          ? Icons.visibility_off_outlined
+                          : Icons.visibility_outlined,
+                      onSuffixTap: () => ref
+                          .read(signInViewModelProvider.notifier)
+                          .togglePasswordVisibility(),
+                    ),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: TextButton(
+                        onPressed: _isLoading
+                            ? null
+                            : () {
+                                ref
+                                    .read(signInViewModelProvider.notifier)
+                                    .cancelGoogleSignIn();
+                                Navigator.of(
+                                  context,
+                                ).pushNamed(AppRoutes.forgotPassword);
+                              },
+                        child: const Text(
+                          'Forgot Password?',
+                          style: TextStyle(fontSize: 12),
                         ),
                       ),
-
-                      const SizedBox(height: 8),
-
-                      const Text(
-                        'Sign in to continue to Expense Tracker',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: AppColors.textSecondary,
+                    ),
+                    const SizedBox(height: 8),
+                    Center(
+                      child: SizedBox(
+                        width: 190,
+                        child: PrimaryButton(
+                          label: 'Sign In',
+                          isLoading: _isEmailLoading,
+                          onPressed: _isLoading ? null : _handleSignIn,
                         ),
                       ),
-
-                      const SizedBox(height: 28),
-
-                      // ==================================
-                      // EMAIL INPUT
-                      // ==================================
-                      CustomTextField(
-                        label: 'Email',
-                        hint: 'example@gmail.com',
-                        controller: _emailController,
-                        keyboardType: TextInputType.emailAddress,
-                        prefixIcon: Icons.email_outlined,
-                      ),
-
-                      const SizedBox(height: 18),
-
-                      // ==================================
-                      // PASSWORD INPUT
-                      // ==================================
-                      CustomTextField(
-                        label: 'Password',
-                        hint: '••••••••',
-                        controller: _passwordController,
-                        obscureText: _obscurePassword,
-                        prefixIcon: Icons.lock_outline_rounded,
-                        suffixIcon: _obscurePassword
-                            ? Icons.visibility_off
-                            : Icons.visibility,
-                        onSuffixTap: () {
-                          ref
-                              .read(signInViewModelProvider.notifier)
-                              .togglePasswordVisibility();
-                        },
-                      ),
-
-                      // ==================================
-                      // FORGOT PASSWORD
-                      // ==================================
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: TextButton(
-                          onPressed: _isLoading
-                              ? null
-                              : () {
-                                  ref
-                                      .read(signInViewModelProvider.notifier)
-                                      .cancelGoogleSignIn();
-
-                                  Navigator.of(context).pushNamed(
-                                    AppRoutes.forgotPassword,
-                                  );
-                                },
-                          child: const Text(
-                            'Forgot Password?',
-                            style: TextStyle(
-                              color: AppColors.primaryOrange,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                      ),
-
-                      const SizedBox(height: 8),
-
-                      // ==================================
-                      // EMAIL SIGN IN BUTTON
-                      // ==================================
-                      PrimaryButton(
-                        label: 'Sign In',
-                        isLoading: _isEmailLoading,
-                        onPressed: _isLoading ? null : _handleSignIn,
-                      ),
-
-                      const SizedBox(height: 26),
-
-                      // ==================================
-                      // DIVIDER
-                      // ==================================
-                      const Row(
-                        children: [
-                          Expanded(child: Divider()),
-                          Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 12),
-                            child: Text(
-                              'Or continue with',
-                              style: TextStyle(
-                                fontSize: 13,
-                                color: AppColors.textSecondary,
-                              ),
-                            ),
-                          ),
-                          Expanded(child: Divider()),
-                        ],
-                      ),
-
-                      const SizedBox(height: 20),
-
-                      // ==================================
-                      // SOCIAL LOGIN BUTTONS
-                      // ==================================
-                      SocialLoginRow(
-                        onGoogle: _handleGoogleSignIn,
-
-                        onApple: () {
-                          if (_isLoading) return;
-
-                          _showSnackBar('Apple Sign-In is not configured yet.');
-                        },
-
-                        onFacebook: () {
-                          if (_isLoading) return;
-
-                          _showSnackBar(
-                            'Facebook Sign-In is not configured yet.',
-                          );
-                        },
-                      ),
-
-                      if (_isGoogleLaunching) ...[
-                        const SizedBox(height: 16),
-
-                        const Center(
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              SizedBox(
-                                width: 16,
-                                height: 16,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  color: AppColors.primaryOrange,
-                                ),
-                              ),
-                              SizedBox(width: 10),
-                              Text(
-                                'Opening Google...',
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  color: AppColors.textSecondary,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-
-                      const SizedBox(height: 28),
-
-                      // ==================================
-                      // SIGN UP
-                      // ==================================
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Flexible(
-                            child: Text(
-                              "Don't have an account? ",
-                              style: TextStyle(color: AppColors.textSecondary),
-                            ),
-                          ),
-
-                          GestureDetector(
-                            onTap: _isLoading
-                                ? null
-                                : () {
-                                    ref
-                                        .read(signInViewModelProvider.notifier)
-                                        .cancelGoogleSignIn();
-
-                                    Navigator.of(context).pushNamed(
-                                      AppRoutes.signUp,
-                                    );
-                                  },
-                            child: const Text(
-                              'Sign Up',
-                              style: TextStyle(
-                                color: AppColors.primaryOrange,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+              const SizedBox(height: 24),
+              Text(
+                'Or continue with',
+                style: TextStyle(color: colors.onSurfaceVariant, fontSize: 12),
+              ),
+              const SizedBox(height: 16),
+              SocialLoginRow(
+                onGoogle: _handleGoogleSignIn,
+                onApple: () {
+                  if (!_isLoading) {
+                    _showSnackBar('Apple Sign-In is not configured yet.');
+                  }
+                },
+                onFacebook: () {
+                  if (!_isLoading) {
+                    _showSnackBar('Facebook Sign-In is not configured yet.');
+                  }
+                },
+              ),
+              if (_isGoogleLaunching)
+                const Padding(
+                  padding: EdgeInsets.only(top: 16),
+                  child: Text('Opening Google...'),
+                ),
+              const SizedBox(height: 20),
+              Wrap(
+                alignment: WrapAlignment.center,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: [
+                  Text(
+                    "Don't have an account?",
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: colors.onSurfaceVariant,
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: _isLoading
+                        ? null
+                        : () {
+                            ref
+                                .read(signInViewModelProvider.notifier)
+                                .cancelGoogleSignIn();
+                            Navigator.of(context).pushNamed(AppRoutes.signUp);
+                          },
+                    child: const Text('Sign Up'),
+                  ),
+                ],
+              ),
+            ],
           ),
         ),
       ),

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../app/app_routes.dart';
-import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/liquid_glass_container.dart';
+import '../../../../core/widgets/tracker_backdrop.dart';
 import '../../../../core/widgets/primary_button.dart';
 import '../view_models/auth_feedback.dart';
 import '../view_models/verification_view_model.dart';
@@ -74,12 +74,14 @@ class _VerifyCodeForm extends ConsumerWidget {
                         : () => Navigator.maybePop(context),
                     icon: const Icon(
                       Icons.arrow_back_ios_new_rounded,
+                      color: Colors.white,
                       size: 20,
                     ),
                   ),
                 ),
 
-                const SizedBox(height: 24),
+                const Center(child: TrackerCoinMark(size: 64)),
+                const SizedBox(height: 28),
 
                 LiquidGlassContainer(
                   child: Column(
@@ -89,14 +91,14 @@ class _VerifyCodeForm extends ConsumerWidget {
                         width: 76,
                         height: 76,
                         decoration: BoxDecoration(
-                          color: AppColors.primaryOrange.withValues(
-                            alpha: 0.12,
-                          ),
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.primary.withValues(alpha: 0.12),
                           borderRadius: BorderRadius.circular(24),
                         ),
-                        child: const Icon(
+                        child: Icon(
                           Icons.mark_email_unread_outlined,
-                          color: AppColors.primaryOrange,
+                          color: Theme.of(context).colorScheme.primary,
                           size: 34,
                         ),
                       ),
@@ -104,26 +106,26 @@ class _VerifyCodeForm extends ConsumerWidget {
                       const SizedBox(height: 24),
 
                       // Heading
-                      const Text(
+                      Text(
                         'Verify Your Email',
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 28,
                           fontWeight: FontWeight.w700,
-                          color: AppColors.textPrimary,
+                          color: Theme.of(context).colorScheme.onSurface,
                         ),
                       ),
 
                       const SizedBox(height: 12),
 
-                      const Text(
+                      Text(
                         'Enter the 6-digit verification code '
                         'we sent to your email address.',
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 14,
                           height: 1.6,
-                          color: AppColors.textSecondary,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
                       ),
 
@@ -133,10 +135,10 @@ class _VerifyCodeForm extends ConsumerWidget {
                       Text(
                         email,
                         textAlign: TextAlign.center,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
-                          color: AppColors.textPrimary,
+                          color: Theme.of(context).colorScheme.onSurface,
                         ),
                       ),
 
@@ -159,11 +161,13 @@ class _VerifyCodeForm extends ConsumerWidget {
                         crossAxisAlignment: WrapCrossAlignment.center,
                         spacing: 4,
                         children: [
-                          const Text(
+                          Text(
                             "Didn't receive the code?",
                             style: TextStyle(
                               fontSize: 13,
-                              color: AppColors.textSecondary,
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurfaceVariant,
                             ),
                           ),
                           TextButton(
@@ -183,7 +187,7 @@ class _VerifyCodeForm extends ConsumerWidget {
                                 color:
                                     state.isLoading || state.resendSeconds > 0
                                     ? Colors.grey
-                                    : AppColors.primaryOrange,
+                                    : Theme.of(context).colorScheme.primary,
                               ),
                             ),
                           ),
@@ -197,17 +201,17 @@ class _VerifyCodeForm extends ConsumerWidget {
                         width: double.infinity,
                         padding: const EdgeInsets.all(14),
                         decoration: BoxDecoration(
-                          color: AppColors.primaryOrange.withValues(
-                            alpha: 0.07,
-                          ),
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.primary.withValues(alpha: 0.07),
                           borderRadius: BorderRadius.circular(14),
                         ),
-                        child: const Row(
+                        child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Icon(
                               Icons.info_outline_rounded,
-                              color: AppColors.primaryOrange,
+                              color: Theme.of(context).colorScheme.primary,
                               size: 20,
                             ),
                             SizedBox(width: 10),
@@ -220,7 +224,9 @@ class _VerifyCodeForm extends ConsumerWidget {
                                 style: TextStyle(
                                   fontSize: 12,
                                   height: 1.5,
-                                  color: AppColors.textSecondary,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurfaceVariant,
                                 ),
                               ),
                             ),

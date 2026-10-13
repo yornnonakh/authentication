@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/tracker_palette.dart';
 
 class SocialLoginRow extends StatelessWidget {
   const SocialLoginRow({
@@ -54,15 +54,17 @@ class _SocialButton extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: 52,
-        height: 52,
+        width: 44,
+        height: 44,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: AppColors.white,
-          border: Border.all(color: AppColors.border),
+          color: Theme.of(context).colorScheme.surfaceContainerLow,
+          border: Border.all(
+            color: TrackerPalette.coral.withValues(alpha: 0.35),
+          ),
           boxShadow: [
             BoxShadow(
-              color: AppColors.black.withValues(alpha: 0.05),
+              color: Colors.black.withValues(alpha: 0.025),
               blurRadius: 8,
               offset: const Offset(0, 2),
             ),
@@ -71,7 +73,7 @@ class _SocialButton extends StatelessWidget {
         child: Icon(
           icon,
           size: isGoogle ? 32 : 24,
-          color: color ?? AppColors.textPrimary,
+          color: color ?? TrackerPalette.coral,
         ),
       ),
     );

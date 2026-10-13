@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../app/app_routes.dart';
-import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/liquid_glass_container.dart';
 import '../../domain/models/onboarding_page.dart';
 import '../view_models/onboarding_view_model.dart';
@@ -14,12 +13,10 @@ class OnboardingScreen extends ConsumerStatefulWidget {
   const OnboardingScreen({super.key});
 
   @override
-  ConsumerState<OnboardingScreen> createState() =>
-      _OnboardingScreenState();
+  ConsumerState<OnboardingScreen> createState() => _OnboardingScreenState();
 }
 
-class _OnboardingScreenState
-    extends ConsumerState<OnboardingScreen> {
+class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   final PageController _pageController = PageController();
 
   int get _totalPages => OnboardingPage.pages.length;
@@ -37,9 +34,7 @@ class _OnboardingScreenState
 
     if (!mounted || !completed) return;
 
-    Navigator.of(context).pushReplacementNamed(
-      AppRoutes.signIn,
-    );
+    Navigator.of(context).pushReplacementNamed(AppRoutes.signIn);
   }
 
   Future<void> _continue(int currentPage) async {
@@ -70,26 +65,18 @@ class _OnboardingScreenState
     final isLastPage = state.page == _totalPages - 1;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       body: SafeArea(
         child: Center(
           child: ConstrainedBox(
-            constraints: const BoxConstraints(
-              maxWidth: 520,
-            ),
+            constraints: const BoxConstraints(maxWidth: 520),
             child: Column(
               children: [
                 // HEADER (Back / Skip)
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(
-                    20,
-                    12,
-                    20,
-                    8,
-                  ),
+                  padding: const EdgeInsets.fromLTRB(20, 12, 20, 8),
                   child: Row(
-                    mainAxisAlignment:
-                    MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       state.page > 0
                           ? TextButton(
@@ -97,16 +84,12 @@ class _OnboardingScreenState
                                   ? null
                                   : () => _goToPage(state.page - 1),
                               style: TextButton.styleFrom(
-                                foregroundColor:
-                                const Color(0xFF64748B),
+                                foregroundColor: const Color(0xFF64748B),
                               ),
                               child: const Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Icon(
-                                    Icons.arrow_back_rounded,
-                                    size: 16,
-                                  ),
+                                  Icon(Icons.arrow_back_rounded, size: 16),
                                   SizedBox(width: 4),
                                   Text('Back'),
                                 ],
@@ -118,8 +101,7 @@ class _OnboardingScreenState
                         TextButton(
                           onPressed: busy ? null : _finish,
                           style: TextButton.styleFrom(
-                            foregroundColor:
-                            const Color(0xFF64748B),
+                            foregroundColor: const Color(0xFF64748B),
                           ),
                           child: const Text('Skip'),
                         )
@@ -151,12 +133,7 @@ class _OnboardingScreenState
 
                 // BOTTOM ACTIONS
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(
-                    24,
-                    12,
-                    24,
-                    28,
-                  ),
+                  padding: const EdgeInsets.fromLTRB(24, 12, 24, 28),
                   child: Column(
                     children: [
                       // ERROR
@@ -174,8 +151,7 @@ class _OnboardingScreenState
 
                       // BOTTOM ROW: Indicators on left, Button wrapped in LiquidGlassContainer on right
                       Row(
-                        mainAxisAlignment:
-                        MainAxisAlignment.spaceBetween,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           // Page indicator dots
                           Row(
@@ -183,16 +159,12 @@ class _OnboardingScreenState
                             children: List.generate(
                               _totalPages,
                               (index) => Semantics(
-                                label:
-                                'Page ${index + 1} of $_totalPages',
+                                label: 'Page ${index + 1} of $_totalPages',
                                 button: true,
                                 selected: state.page == index,
                                 child: InkWell(
-                                  onTap: busy
-                                      ? null
-                                      : () => _goToPage(index),
-                                  borderRadius:
-                                  BorderRadius.circular(20),
+                                  onTap: busy ? null : () => _goToPage(index),
+                                  borderRadius: BorderRadius.circular(20),
                                   child: Padding(
                                     padding: const EdgeInsets.all(4),
                                     child: AnimatedContainer(
@@ -200,16 +172,15 @@ class _OnboardingScreenState
                                         milliseconds: 250,
                                       ),
                                       curve: Curves.easeInOut,
-                                      width: state.page == index
-                                          ? 20
-                                          : 6,
+                                      width: state.page == index ? 20 : 6,
                                       height: 6,
                                       decoration: BoxDecoration(
                                         color: state.page == index
-                                            ? AppColors.primaryOrange
+                                            ? Theme.of(
+                                                context,
+                                              ).colorScheme.primary
                                             : const Color(0xFFE2E8F0),
-                                        borderRadius:
-                                        BorderRadius.circular(20),
+                                        borderRadius: BorderRadius.circular(20),
                                       ),
                                     ),
                                   ),
@@ -232,10 +203,13 @@ class _OnboardingScreenState
                                       ? null
                                       : () => _continue(state.page),
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: AppColors.primaryOrange,
+                                    backgroundColor: Theme.of(
+                                      context,
+                                    ).colorScheme.primary,
                                     foregroundColor: Colors.white,
-                                    disabledBackgroundColor: AppColors
-                                        .primaryOrange
+                                    disabledBackgroundColor: Theme.of(context)
+                                        .colorScheme
+                                        .primary
                                         .withValues(alpha: 0.5),
                                     elevation: 0,
                                     shadowColor: Colors.transparent,
@@ -244,31 +218,30 @@ class _OnboardingScreenState
                                       horizontal: 16,
                                     ),
                                     shape: RoundedRectangleBorder(
-                                      borderRadius:
-                                      BorderRadius.circular(24),
+                                      borderRadius: BorderRadius.circular(24),
                                     ),
                                   ),
                                   child: state.isCompleting
                                       ? const SizedBox(
-                                    width: 20,
-                                    height: 20,
-                                    child: CircularProgressIndicator(
-                                      color: Colors.white,
-                                      strokeWidth: 2,
-                                    ),
-                                  )
+                                          width: 20,
+                                          height: 20,
+                                          child: CircularProgressIndicator(
+                                            color: Colors.white,
+                                            strokeWidth: 2,
+                                          ),
+                                        )
                                       : FittedBox(
-                                    fit: BoxFit.scaleDown,
-                                    child: Text(
-                                      isLastPage ? 'Get Started' : 'Next',
-                                      textScaler: TextScaler.noScaling,
-                                      style: const TextStyle(
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.w600,
-                                        letterSpacing: 0.3,
-                                      ),
-                                    ),
-                                  ),
+                                          fit: BoxFit.scaleDown,
+                                          child: Text(
+                                            isLastPage ? 'Get Started' : 'Next',
+                                            textScaler: TextScaler.noScaling,
+                                            style: const TextStyle(
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.w600,
+                                              letterSpacing: 0.3,
+                                            ),
+                                          ),
+                                        ),
                                 ),
                               ),
                             ),
@@ -292,10 +265,7 @@ class _OnboardingScreenState
 // ------------------------------------------------------
 
 class _WelcomePage extends StatelessWidget {
-  const _WelcomePage({
-    super.key,
-    required this.page,
-  });
+  const _WelcomePage({super.key, required this.page});
 
   final OnboardingPage page;
 
@@ -310,9 +280,7 @@ class _WelcomePage extends StatelessWidget {
 
         return SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
-          padding: const EdgeInsets.symmetric(
-            horizontal: 28,
-          ),
+          padding: const EdgeInsets.symmetric(horizontal: 28),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -324,21 +292,21 @@ class _WelcomePage extends StatelessWidget {
                 duration: const Duration(milliseconds: 500),
                 curve: Curves.easeOutBack,
                 builder: (context, scale, child) {
-                  return Transform.scale(
-                    scale: scale,
-                    child: child,
-                  );
+                  return Transform.scale(scale: scale, child: child);
                 },
                 child: Container(
                   width: circleSize,
                   height: circleSize,
                   decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: const Color(0xFFFFFAED), // Soft warm orange/cream tint following app color
+                    borderRadius: BorderRadius.circular(40),
+                    color: Theme.of(context)
+                        .colorScheme
+                        .surfaceContainerLow, // Soft warm orange/cream tint following app color
                     boxShadow: [
                       BoxShadow(
-                        color: AppColors.primaryOrange
-                            .withValues(alpha: 0.08),
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.primary.withValues(alpha: 0.08),
                         blurRadius: 36,
                         offset: const Offset(0, 14),
                       ),
@@ -348,9 +316,7 @@ class _WelcomePage extends StatelessWidget {
                     child: SizedBox(
                       width: circleSize * 0.8,
                       height: circleSize * 0.8,
-                      child: OnboardingArtwork(
-                        illustration: page.illustration,
-                      ),
+                      child: OnboardingArtwork(illustration: page.illustration),
                     ),
                   ),
                 ),
@@ -364,8 +330,8 @@ class _WelcomePage extends StatelessWidget {
                 child: Text(
                   page.title,
                   textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    color: Color(0xFF0F172A),
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurface,
                     fontSize: 28,
                     fontWeight: FontWeight.w700,
                     height: 1.25,
@@ -380,8 +346,8 @@ class _WelcomePage extends StatelessWidget {
               Text(
                 page.description,
                 textAlign: TextAlign.center,
-                style: const TextStyle(
-                  color: Color(0xFF64748B),
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                   fontSize: 15,
                   fontWeight: FontWeight.w400,
                   height: 1.6,
