@@ -63,6 +63,7 @@ void main() {
       final repository = FakeExpenseRepository();
       await mount(tester, repository, const HomeScreen());
       await tester.ensureVisible(find.text('Add transaction'));
+      await tester.pumpAndSettle();
       await tester.tap(find.text('Add transaction'));
       await tester.pumpAndSettle();
       await tester.tap(find.text('Scan Receipt (AI)'));
@@ -76,6 +77,7 @@ void main() {
       expect(find.text('Starbucks'), findsOneWidget);
       expect(find.text('4.75'), findsOneWidget);
       await tester.ensureVisible(find.text('Save expense'));
+      await tester.pumpAndSettle();
       await tester.tap(find.text('Save expense'));
       await tester.pumpAndSettle();
       final stored = await repository.load('user-1');
@@ -146,6 +148,7 @@ void main() {
         'Shared with a friend',
       );
       await tester.ensureVisible(find.text('Save expense'));
+      await tester.pumpAndSettle();
       await tester.tap(find.text('Save expense'));
       await tester.pumpAndSettle();
       final stored = await repository.load('user-1');
@@ -170,10 +173,12 @@ void main() {
       sharing: sharing,
     );
     await tester.ensureVisible(find.text('Export Data to CSV'));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Export Data to CSV'));
     await tester.pumpAndSettle();
     expect(sharing.contents, contains('4.75'));
     await tester.ensureVisible(find.text('Reset All Data'));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Reset All Data'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Cancel'));
@@ -212,10 +217,12 @@ void main() {
         Brightness.dark,
       );
       await tester.ensureVisible(find.text('Food & Dining').last);
+      await tester.pumpAndSettle();
       await tester.tap(find.text('Food & Dining').last);
       await tester.pumpAndSettle();
       expect(find.text('Food & Dining · \$4.75 · 100.0%'), findsOneWidget);
       await tester.ensureVisible(find.text('See all').first);
+      await tester.pumpAndSettle();
       await tester.tap(find.text('See all').first);
       await tester.pumpAndSettle();
       expect(find.byType(HistoryScreen), findsOneWidget);

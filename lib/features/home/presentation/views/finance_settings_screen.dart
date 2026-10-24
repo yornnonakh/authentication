@@ -1,9 +1,13 @@
+import '../../../../core/widgets/ios_scroll_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/theme/theme_mode_provider.dart';
 import '../view_models/data_controls_view_model.dart';
 import '../view_models/expense_view_model.dart';
 import '../widgets/finance_widgets.dart';
+import '../view_models/dashboard_navigation_view_model.dart';
+import '../../../profile/presentation/view_models/profile_view_model.dart';
+import '../../../profile/presentation/widgets/profile_avatar.dart';
 
 class FinanceSettingsScreen extends ConsumerWidget {
   const FinanceSettingsScreen({super.key});
@@ -52,26 +56,64 @@ class FinanceSettingsScreen extends ConsumerWidget {
         ).showSnackBar(SnackBar(content: Text(message)));
       }
     });
-    return SingleChildScrollView(
+    return IosScrollPage(
       key: const PageStorageKey('settings-scroll'),
-      padding: const EdgeInsets.all(24),
+      title: 'Settings',
+      onBack: ref.read(dashboardNavigationViewModelProvider.notifier).showHome,
+      backLabel: 'Home',
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
-            'Settings',
-            textAlign: TextAlign.center,
-            style: Theme.of(
-              context,
-            ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
-          ),
-          const SizedBox(height: 8),
-          Text(
             'Your preferences and personal data',
-            textAlign: TextAlign.center,
             style: TextStyle(color: colors.onSurfaceVariant, fontSize: 12),
           ),
           const SizedBox(height: 28),
+          FinanceCard(
+            child: InkWell(
+              borderRadius: BorderRadius.circular(16),
+              onTap: ref
+                  .read(dashboardNavigationViewModelProvider.notifier)
+                  .showProfile,
+              child: Row(
+                children: [
+                  ProfileAvatar(
+                    profile: ref.watch(currentUserProfileProvider),
+                    size: 48,
+                  ),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          ref.watch(currentUserProfileProvider)?.displayName ??
+                              'Your account',
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        const SizedBox(height: 5),
+                        Text(
+                          'Personal details and account',
+                          style: TextStyle(
+                            color: colors.onSurfaceVariant,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Icon(
+                    Icons.chevron_right_rounded,
+                    color: colors.onSurfaceVariant,
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 20),
           FinanceCard(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -80,10 +122,11 @@ class FinanceSettingsScreen extends ConsumerWidget {
                   children: [
                     Icon(Icons.palette_outlined, color: colors.primary),
                     const SizedBox(width: 12),
-                    Text(
-                      'Appearance',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w700,
+                    Expanded(
+                      child: Text(
+                        'Appearance',
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(fontWeight: FontWeight.w700),
                       ),
                     ),
                   ],
@@ -91,12 +134,18 @@ class FinanceSettingsScreen extends ConsumerWidget {
                 const SizedBox(height: 18),
                 DropdownButtonFormField<ThemeMode>(
                   key: ValueKey(theme),
+                  isExpanded: true,
+                  style: TextStyle(fontSize: 14, color: colors.onSurface),
                   initialValue: theme,
                   decoration: const InputDecoration(labelText: 'Theme'),
                   items: const [
                     DropdownMenuItem(
                       value: ThemeMode.system,
-                      child: Text('System default'),
+                      child: Text(
+                        'System default',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
                     DropdownMenuItem(
                       value: ThemeMode.light,
@@ -142,10 +191,11 @@ class FinanceSettingsScreen extends ConsumerWidget {
                   children: [
                     Icon(Icons.storage_outlined, color: colors.primary),
                     const SizedBox(width: 12),
-                    Text(
-                      'Data controls',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w700,
+                    Expanded(
+                      child: Text(
+                        'Data controls',
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(fontWeight: FontWeight.w700),
                       ),
                     ),
                   ],

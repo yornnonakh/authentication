@@ -11,6 +11,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../support/profile_fakes.dart';
+import '../../support/motion_settings.dart';
 
 void main() {
   late FakeLogoutRepository auth;
@@ -22,6 +23,7 @@ void main() {
   tearDown(() => auth.events.close());
 
   Future<void> mount(WidgetTester tester) async {
+    useReducedMotion(tester);
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
@@ -53,20 +55,23 @@ void main() {
     expect(find.byType(DashboardScreen), findsOneWidget);
     expect(find.byType(SignInScreen), findsNothing);
     expect(find.text('Sign Up Name'), findsOneWidget);
-    await tester.tap(find.byTooltip('Profile'));
+    await tester.tap(find.byTooltip('Open profile'));
     await tester.pumpAndSettle();
     expect(find.text('user@example.com'), findsWidgets);
     expect(auth.restoreCalls, 1);
   });
 
-  testWidgets('without a saved session startup shows onboarding and transitions to sign-in', (tester) async {
-    await mount(tester);
-    expect(find.byType(OnboardingScreen), findsOneWidget);
-    expect(find.byType(DashboardScreen), findsNothing);
-    await completeOnboarding(tester);
-    await tester.pumpAndSettle();
-    expect(find.byType(SignInScreen), findsOneWidget);
-  });
+  testWidgets(
+    'without a saved session startup shows onboarding and transitions to sign-in',
+    (tester) async {
+      await mount(tester);
+      expect(find.byType(OnboardingScreen), findsOneWidget);
+      expect(find.byType(DashboardScreen), findsNothing);
+      await completeOnboarding(tester);
+      await tester.pumpAndSettle();
+      expect(find.byType(SignInScreen), findsOneWidget);
+    },
+  );
 
   testWidgets('hot reload after sign-in keeps the account and selected tab', (
     tester,
@@ -83,10 +88,11 @@ void main() {
       'fixture-password',
     );
     await tester.ensureVisible(find.text('Sign In'));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Sign In'));
     await tester.pumpAndSettle();
     expect(find.byType(DashboardScreen), findsOneWidget);
-    await tester.tap(find.byTooltip('Profile'));
+    await tester.tap(find.byTooltip('Open profile'));
     await tester.pumpAndSettle();
 
     final reload = tester.binding.reassembleApplication();
@@ -108,7 +114,7 @@ void main() {
   ) async {
     auth.hasSavedSession = true;
     await mount(tester);
-    await tester.tap(find.byTooltip('Profile'));
+    await tester.tap(find.byTooltip('Open profile'));
     await tester.pumpAndSettle();
 
     final reload = tester.binding.reassembleApplication();

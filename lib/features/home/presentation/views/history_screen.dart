@@ -1,3 +1,4 @@
+import '../../../../core/widgets/ios_scroll_page.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -80,25 +81,22 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
     });
     return CustomScrollView(
       key: const PageStorageKey('history-scroll'),
+      physics: const BouncingScrollPhysics(
+        parent: AlwaysScrollableScrollPhysics(),
+      ),
       slivers: [
-        SliverAppBar(
-          pinned: true,
-          backgroundColor: Colors.transparent,
-          surfaceTintColor: Colors.transparent,
-          automaticallyImplyLeading: Navigator.of(context).canPop(),
-          title: const Text('Transactions'),
-          actions: [
-            IconButton(
-              tooltip: 'Add transaction',
-              icon: const Icon(Icons.add_rounded),
-              onPressed: data.hasValue
-                  ? () => showExpenseEntrySheet(
-                      context,
-                      ref.read(financeMonthProvider),
-                    )
-                  : null,
-            ),
-          ],
+        IosSliverNavigationBar(
+          title: 'Transactions',
+          trailing: IconButton(
+            tooltip: 'Add transaction',
+            icon: Icon(Icons.add_rounded, color: colors.primary),
+            onPressed: data.hasValue
+                ? () => showExpenseEntrySheet(
+                    context,
+                    ref.read(financeMonthProvider),
+                  )
+                : null,
+          ),
           bottom: PreferredSize(
             preferredSize: const Size.fromHeight(72),
             child: Padding(

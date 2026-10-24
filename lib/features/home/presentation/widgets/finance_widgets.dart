@@ -11,24 +11,24 @@ abstract final class FinanceStyle {
   static Color expense(BuildContext context) =>
       Theme.of(context).brightness == Brightness.dark
       ? const Color(0xFFFFAAA3)
-      : const Color(0xFFB83D49);
+      : const Color(0xFFE52D62);
   static const categoryColors = [
-    Color(0xFFFFBBB2),
-    Color(0xFFA9C9FF),
-    Color(0xFF92C0FF),
-    Color(0xFFF5B8DB),
-    Color(0xFFBD9AF6),
-    Color(0xFFA6DCC8),
-    Color(0xFF68DEE2),
-    Color(0xFFF4D18C),
+    Color(0xFF219CF3),
+    Color(0xFFFF7053),
+    Color(0xFFFF9C29),
+    Color(0xFF9865F8),
+    Color(0xFFFF8000),
+    Color(0xFF2DBF75),
+    Color(0xFF21ADD0),
+    Color(0xFFB995E8),
   ];
   static Color categoryColor(String category) {
     final index = TransactionCategories.expenses.indexOf(category);
     if (index >= 0) return categoryColors[index];
     return switch (category) {
-      'Salary' => const Color(0xFFA6DCC8),
-      'Freelance' => const Color(0xFFBD9AF6),
-      'Investments' => const Color(0xFFA9C9FF),
+      'Salary' => const Color(0xFF2DBF75),
+      'Freelance' => TrackerPalette.purple,
+      'Investments' => TrackerPalette.blue,
       'Gifts' => const Color(0xFFF5B8DB),
       _ => const Color(0xFFF4D18C),
     };
@@ -63,12 +63,15 @@ class FinanceCard extends StatelessWidget {
     width: double.infinity,
     decoration: BoxDecoration(
       color: Theme.of(context).colorScheme.surfaceContainerLow,
-      borderRadius: BorderRadius.circular(32),
+      borderRadius: BorderRadius.circular(24),
+      border: Border.all(
+        color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.55),
+      ),
       boxShadow: [
         BoxShadow(
-          color: Colors.black.withValues(alpha: 0.08),
-          blurRadius: 24,
-          offset: const Offset(0, 8),
+          color: Colors.black.withValues(alpha: 0.018),
+          blurRadius: 18,
+          offset: const Offset(0, 5),
         ),
       ],
     ),
@@ -89,7 +92,7 @@ class TransactionIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = transaction.isIncome
-        ? const Color(0xFFA6DCC8)
+        ? const Color(0xFF2DBF75)
         : FinanceStyle.categoryColor(transaction.category);
     final icon = Stack(
       clipBehavior: Clip.none,
@@ -97,10 +100,13 @@ class TransactionIcon extends StatelessWidget {
         Container(
           width: size,
           height: size,
-          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+          decoration: BoxDecoration(
+            color: color.withValues(alpha: 0.09),
+            borderRadius: BorderRadius.circular(14),
+          ),
           child: Icon(
             FinanceStyle.categoryIcon(transaction.category),
-            color: TrackerPalette.ink,
+            color: color,
             size: size * 0.48,
           ),
         ),
@@ -137,19 +143,26 @@ class FinanceTransactionTile extends StatelessWidget {
     required this.transaction,
     this.onTap,
     this.heroTag,
+    this.grouped = false,
   });
   final Transaction transaction;
   final VoidCallback? onTap;
   final String? heroTag;
+  final bool grouped;
   @override
   Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.only(bottom: 10),
+    padding: grouped ? EdgeInsets.zero : const EdgeInsets.only(bottom: 10),
     child: Material(
       color: Theme.of(context).colorScheme.surfaceContainerLow,
-      borderRadius: BorderRadius.circular(20),
+      borderRadius: BorderRadius.circular(grouped ? 0 : 20),
       child: ListTile(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(grouped ? 0 : 20),
+        ),
+        contentPadding: EdgeInsets.symmetric(
+          horizontal: grouped ? 16 : 12,
+          vertical: grouped ? 8 : 5,
+        ),
         leading: TransactionIcon(
           transaction: transaction,
           heroTag: heroTag,
@@ -159,11 +172,14 @@ class FinanceTransactionTile extends StatelessWidget {
           transaction.title,
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
-          style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+          style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
         ),
         subtitle: Text(
           '${transaction.category} · ${financeDateLabel(transaction.date)}',
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(fontSize: 10),
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+            fontSize: 11,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+          ),
         ),
         trailing: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 110),
@@ -171,7 +187,7 @@ class FinanceTransactionTile extends StatelessWidget {
             '${transaction.isIncome ? '+' : '-'}${expenseMoney(transaction.amountCents)}',
             textAlign: TextAlign.end,
             style: TextStyle(
-              fontSize: 12,
+              fontSize: 14,
               fontWeight: FontWeight.w600,
               color: transaction.isIncome
                   ? FinanceStyle.income(context)

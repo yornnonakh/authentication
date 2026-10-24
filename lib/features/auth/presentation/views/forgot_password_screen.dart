@@ -1,3 +1,4 @@
+import '../../../../core/widgets/ios_scroll_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -557,88 +558,74 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
       },
 
       child: AuthBackground(
-        child: SafeArea(
-          child: Center(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 460),
-
+        child: IosScrollPage(
+          title: switch (_step) {
+            RecoveryStep.email => 'Password recovery',
+            RecoveryStep.otp => 'Verify recovery code',
+            _ => 'Reset password',
+          },
+          onBack: _handleBack,
+          backEnabled: !_isLoading,
+          maxContentWidth: 460,
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+          child: Column(
+            children: [
+              const TrackerCoinMark(size: 64),
+              const SizedBox(height: 28),
+              // Rounded form surface
+              LiquidGlassContainer(
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const TrackerCoinMark(size: 64),
-                    const SizedBox(height: 28),
-                    // Rounded form surface
-                    LiquidGlassContainer(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // BACK BUTTON AT THE TOP INSIDE CONTAINER
-                          IconButton(
-                            onPressed: _isLoading ? null : _handleBack,
-                            padding: EdgeInsets.zero,
-                            alignment: Alignment.centerLeft,
-                            icon: const Icon(
-                              Icons.arrow_back_ios_new_rounded,
-                              size: 20,
-                            ),
-                          ),
+                    // ICON
+                    Center(
+                      child: Container(
+                        width: 76,
+                        height: 76,
 
-                          const SizedBox(height: 16),
+                        decoration: BoxDecoration(
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.primary.withValues(alpha: 0.12),
 
-                          // ICON
-                          Center(
-                            child: Container(
-                              width: 76,
-                              height: 76,
+                          borderRadius: BorderRadius.circular(24),
+                        ),
 
-                              decoration: BoxDecoration(
-                                color: Theme.of(
-                                  context,
-                                ).colorScheme.primary.withValues(alpha: 0.12),
+                        child: Icon(
+                          _step == RecoveryStep.email
+                              ? Icons.lock_reset_rounded
+                              : _step == RecoveryStep.otp
+                              ? Icons.mark_email_read_outlined
+                              : Icons.shield_outlined,
 
-                                borderRadius: BorderRadius.circular(24),
-                              ),
+                          size: 36,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                      ),
+                    ),
 
-                              child: Icon(
-                                _step == RecoveryStep.email
-                                    ? Icons.lock_reset_rounded
-                                    : _step == RecoveryStep.otp
-                                    ? Icons.mark_email_read_outlined
-                                    : Icons.shield_outlined,
+                    const SizedBox(height: 26),
 
-                                size: 36,
-                                color: Theme.of(context).colorScheme.primary,
-                              ),
-                            ),
-                          ),
+                    // ANIMATED SCREEN TRANSITIONS
+                    AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 250),
 
-                          const SizedBox(height: 26),
+                      child: KeyedSubtree(
+                        key: ValueKey(_step),
 
-                          // ANIMATED SCREEN TRANSITIONS
-                          AnimatedSwitcher(
-                            duration: const Duration(milliseconds: 250),
+                        child: switch (_step) {
+                          RecoveryStep.email => _buildEmailStep(),
 
-                            child: KeyedSubtree(
-                              key: ValueKey(_step),
+                          RecoveryStep.otp => _buildOtpStep(),
 
-                              child: switch (_step) {
-                                RecoveryStep.email => _buildEmailStep(),
-
-                                RecoveryStep.otp => _buildOtpStep(),
-
-                                RecoveryStep.password => _buildPasswordStep(),
-                              },
-                            ),
-                          ),
-                        ],
+                          RecoveryStep.password => _buildPasswordStep(),
+                        },
                       ),
                     ),
                   ],
                 ),
               ),
-            ),
+            ],
           ),
         ),
       ),

@@ -44,20 +44,25 @@ void main() {
   ) async {
     final repository = FakeExpenseRepository();
     await mount(tester, repository);
+    await tester.ensureVisible(find.text('Add transaction'));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Add transaction'));
     await tester.pumpAndSettle();
     await tester.ensureVisible(find.text('Save expense'));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Save expense'));
     await tester.pumpAndSettle();
     expect(find.text('Enter a description.'), findsOneWidget);
     await tester.enterText(find.byType(TextFormField).at(0), 'Lunch');
     await tester.enterText(find.byType(TextFormField).at(1), '19.99');
     await tester.ensureVisible(find.text('Save expense'));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Save expense'));
     await tester.pumpAndSettle();
     expect(find.byType(ExpenseEntrySheet), findsNothing);
     expect(find.text('\$19.99'), findsWidgets);
     await tester.ensureVisible(find.text('Set budget'));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Set budget'));
     await tester.pumpAndSettle();
     await tester.enterText(find.byType(TextFormField), '100');
@@ -65,6 +70,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('\$80.01 left to spend'), findsOneWidget);
     await tester.ensureVisible(find.text('Add transaction'));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Add transaction'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Income').last);
@@ -72,10 +78,12 @@ void main() {
     await tester.enterText(find.byType(TextFormField).at(0), 'Salary');
     await tester.enterText(find.byType(TextFormField).at(1), '500');
     await tester.ensureVisible(find.text('Save income'));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Save income'));
     await tester.pumpAndSettle();
     expect(find.text('\$480.01'), findsWidgets);
     await tester.ensureVisible(find.byTooltip('Previous month'));
+    await tester.pumpAndSettle();
     await tester.tap(find.byTooltip('Previous month'));
     await tester.pumpAndSettle();
     expect(find.text('0 expenses recorded · USD'), findsOneWidget);
@@ -90,11 +98,14 @@ void main() {
   ) async {
     final repository = FakeExpenseRepository()..failSave = true;
     await mount(tester, repository);
+    await tester.ensureVisible(find.text('Add transaction'));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Add transaction'));
     await tester.pumpAndSettle();
     await tester.enterText(find.byType(TextFormField).at(0), 'Coffee');
     await tester.enterText(find.byType(TextFormField).at(1), '3.50');
     await tester.ensureVisible(find.text('Save expense'));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Save expense'));
     await tester.pumpAndSettle();
     expect(find.text('Unable to save. Please try again.'), findsOneWidget);
@@ -130,6 +141,7 @@ void main() {
       await mount(tester, repository, width: 320, textScale: 1.5);
       expect(tester.takeException(), isNull);
       await tester.ensureVisible(find.text('See all'));
+      await tester.pumpAndSettle();
       await tester.tap(find.text('See all'));
       await tester.pumpAndSettle();
       await tester.scrollUntilVisible(

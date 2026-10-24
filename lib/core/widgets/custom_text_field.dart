@@ -7,19 +7,23 @@ class CustomTextField extends StatelessWidget {
     required this.label,
     required this.hint,
     this.controller,
+    this.focusNode,
     this.obscureText = false,
     this.keyboardType = TextInputType.text,
     this.prefixIcon,
     this.suffixIcon,
     this.onSuffixTap,
+    this.focusedBottomSpace = 0,
   });
 
   final String label, hint;
   final TextEditingController? controller;
+  final FocusNode? focusNode;
   final bool obscureText;
   final TextInputType keyboardType;
   final IconData? prefixIcon, suffixIcon;
   final VoidCallback? onSuffixTap;
+  final double focusedBottomSpace;
 
   @override
   Widget build(BuildContext context) {
@@ -43,6 +47,7 @@ class CustomTextField extends StatelessWidget {
         ],
         TextFormField(
           controller: controller,
+          focusNode: focusNode,
           obscureText: obscureText,
           keyboardType: keyboardType,
           style: TextStyle(
@@ -90,13 +95,16 @@ class CustomTextField extends StatelessWidget {
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(24),
-              borderSide: BorderSide(
-                color: colors.primary,
-                width: 1.5,
-              ),
+              borderSide: BorderSide(color: colors.primary, width: 1.5),
             ),
           ),
         ),
+        if (focusNode != null && focusedBottomSpace > 0)
+          ListenableBuilder(
+            listenable: focusNode!,
+            builder: (context, child) =>
+                SizedBox(height: focusNode!.hasFocus ? focusedBottomSpace : 0),
+          ),
       ],
     );
   }

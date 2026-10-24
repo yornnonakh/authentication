@@ -9,6 +9,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../support/profile_fakes.dart';
+import '../../support/motion_settings.dart';
 
 void main() {
   late FakeProfileRepository profile;
@@ -20,6 +21,7 @@ void main() {
   tearDown(() => auth.events.close());
 
   Future<void> mount(WidgetTester tester) async {
+    useReducedMotion(tester);
     await tester.binding.setSurfaceSize(const Size(390, 844));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     await tester.pumpWidget(
@@ -42,7 +44,7 @@ void main() {
     (tester) async {
       await mount(tester);
       expect(find.text('Sign Up Name'), findsOneWidget);
-      await tester.tap(find.byTooltip('Profile'));
+      await tester.tap(find.byTooltip('Open profile'));
       await tester.pumpAndSettle();
       expect(find.text('My Profile'), findsOneWidget);
       final fields = find.byType(TextFormField);
@@ -54,15 +56,17 @@ void main() {
       await tester.enterText(fields.at(2), '+855 12345678');
       await tester.enterText(fields.at(3), 'Saved from my input');
       await tester.ensureVisible(find.text('Save profile'));
+      await tester.pumpAndSettle();
       await tester.tap(find.text('Save profile'));
       await tester.pumpAndSettle();
       expect(profile.profile.fullName, 'New Profile Name');
-      await tester.tap(find.byTooltip('Home'));
+      await tester.tap(find.text('Home').last);
       await tester.pumpAndSettle();
       expect(find.text('New Profile Name'), findsOneWidget);
-      await tester.tap(find.byTooltip('Profile'));
+      await tester.tap(find.byTooltip('Open profile'));
       await tester.pumpAndSettle();
       await tester.ensureVisible(find.text('Log out'));
+      await tester.pumpAndSettle();
       await tester.tap(find.text('Log out'));
       await tester.pumpAndSettle();
       expect(find.byType(SignInScreen), findsOneWidget);
@@ -80,11 +84,12 @@ void main() {
     'failed save preserves typed input; failed logout keeps profile open',
     (tester) async {
       await mount(tester);
-      await tester.tap(find.byTooltip('Profile'));
+      await tester.tap(find.byTooltip('Open profile'));
       await tester.pumpAndSettle();
       profile.saveFailure = Exception('Network failed');
       await tester.enterText(find.byType(TextFormField).first, 'Unsaved Name');
       await tester.ensureVisible(find.text('Save profile'));
+      await tester.pumpAndSettle();
       await tester.tap(find.text('Save profile'));
       await tester.pumpAndSettle();
       expect(
@@ -98,6 +103,7 @@ void main() {
       await tester.pumpAndSettle();
       auth.signOutFailure = const AuthFailure('Logout failed');
       await tester.ensureVisible(find.text('Log out'));
+      await tester.pumpAndSettle();
       await tester.tap(find.text('Log out'));
       await tester.pumpAndSettle();
       expect(find.byType(SignInScreen), findsNothing);

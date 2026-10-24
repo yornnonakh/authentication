@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../auth/presentation/view_models/auth_feedback.dart';
 import '../../../auth/presentation/view_models/logout_view_model.dart';
 import '../../../auth/presentation/widgets/auth_feedback_snackbar.dart';
+import '../../../../core/widgets/ios_scroll_page.dart';
 import '../../../home/presentation/view_models/dashboard_navigation_view_model.dart';
 import '../../../home/presentation/widgets/finance_widgets.dart';
 import '../../domain/models/user_profile.dart';
@@ -39,33 +40,14 @@ class ProfileScreen extends ConsumerWidget {
       }
     });
     final busy = logout.isLoading || (profile.value?.isSaving ?? false);
-    return SingleChildScrollView(
+    return IosScrollPage(
       key: const PageStorageKey('profile-scroll'),
-      padding: const EdgeInsets.all(20),
+      title: 'My Profile',
+      onBack: ref.read(dashboardNavigationViewModelProvider.notifier).showHome,
+      backLabel: 'Home',
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Row(
-            children: [
-              IconButton(
-                tooltip: 'Back to home',
-                onPressed: ref
-                    .read(dashboardNavigationViewModelProvider.notifier)
-                    .showHome,
-                icon: const Icon(Icons.chevron_left_rounded),
-              ),
-              Expanded(
-                child: Text(
-                  'My Profile',
-                  textAlign: TextAlign.center,
-                  style: Theme.of(
-                    context,
-                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
-                ),
-              ),
-              const SizedBox(width: 48),
-            ],
-          ),
           const SizedBox(height: 24),
           profile.when(
             loading: () => const Padding(

@@ -5,7 +5,7 @@ import '../utils/finance_format.dart';
 import '../view_models/expense_view_model.dart';
 import '../widgets/expense_entry_sheet.dart';
 import '../widgets/finance_widgets.dart';
-import '../../../../core/widgets/tracker_backdrop.dart';
+import '../../../../core/widgets/ios_scroll_page.dart';
 
 void openTransactionDetail(
   BuildContext context,
@@ -37,108 +37,101 @@ class TransactionDetailScreen extends ConsumerWidget {
         transaction;
     final colors = Theme.of(context).colorScheme;
     return Scaffold(
-      appBar: AppBar(title: const Text('Transaction details')),
-      body: TrackerBackdrop(
-        child: SafeArea(
-          child: Align(
-            alignment: Alignment.topCenter,
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 640),
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(24),
-                child: FinanceCard(
+      body: SafeArea(
+        child: IosScrollPage(
+          title: 'Transaction details',
+          maxContentWidth: 640,
+          padding: const EdgeInsets.all(24),
+          child: FinanceCard(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const SizedBox(height: 12),
+                Center(
+                  child: TransactionIcon(
+                    transaction: current,
+                    size: 88,
+                    heroTag: heroTag,
+                  ),
+                ),
+                const SizedBox(height: 24),
+                Text(
+                  current.title,
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  '${current.isIncome ? '+' : '-'}${expenseMoney(current.amountCents)}',
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.displaySmall?.copyWith(
+                    fontWeight: FontWeight.w700,
+                    color: current.isIncome
+                        ? FinanceStyle.income(context)
+                        : FinanceStyle.expense(context),
+                  ),
+                ),
+                const SizedBox(height: 28),
+                FinanceCard(
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      const SizedBox(height: 12),
-                      Center(
-                        child: TransactionIcon(
-                          transaction: current,
-                          size: 88,
-                          heroTag: heroTag,
-                        ),
+                      _Detail(
+                        label: 'Type',
+                        value: current.isIncome ? 'Income' : 'Expense',
                       ),
-                      const SizedBox(height: 24),
-                      Text(
-                        current.title,
-                        textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.headlineSmall
-                            ?.copyWith(fontWeight: FontWeight.w700),
+                      const Divider(height: 28),
+                      _Detail(label: 'Category', value: current.category),
+                      const Divider(height: 28),
+                      _Detail(
+                        label: 'Date',
+                        value: financeDateLabel(current.date),
                       ),
-                      const SizedBox(height: 10),
-                      Text(
-                        '${current.isIncome ? '+' : '-'}${expenseMoney(current.amountCents)}',
-                        textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.displaySmall
-                            ?.copyWith(
-                              fontWeight: FontWeight.w700,
-                              color: current.isIncome
-                                  ? FinanceStyle.income(context)
-                                  : FinanceStyle.expense(context),
-                            ),
-                      ),
-                      const SizedBox(height: 28),
-                      FinanceCard(
-                        child: Column(
-                          children: [
-                            _Detail(
-                              label: 'Type',
-                              value: current.isIncome ? 'Income' : 'Expense',
-                            ),
-                            const Divider(height: 28),
-                            _Detail(label: 'Category', value: current.category),
-                            const Divider(height: 28),
-                            _Detail(
-                              label: 'Date',
-                              value: financeDateLabel(current.date),
-                            ),
-                            const Divider(height: 28),
-                            const _Detail(label: 'Currency', value: 'USD'),
-                          ],
-                        ),
-                      ),
-                      if (current.notes != null) ...[
-                        const SizedBox(height: 20),
-                        FinanceCard(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Notes',
-                                style: TextStyle(
-                                  color: colors.onSurfaceVariant,
-                                  fontSize: 12,
-                                ),
-                              ),
-                              const SizedBox(height: 10),
-                              Text(current.notes!),
-                            ],
-                          ),
-                        ),
-                      ],
-                      const SizedBox(height: 24),
-                      FilledButton.icon(
-                        onPressed: () => showExpenseEntrySheet(
-                          context,
-                          DateTime(current.date.year, current.date.month),
-                          transaction: current,
-                        ),
-                        icon: const Icon(Icons.edit_outlined),
-                        label: const Text('Edit transaction'),
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                        'Saved locally on this device.',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: colors.onSurfaceVariant,
-                          fontSize: 12,
-                        ),
-                      ),
+                      const Divider(height: 28),
+                      const _Detail(label: 'Currency', value: 'USD'),
                     ],
                   ),
                 ),
-              ),
+                if (current.notes != null) ...[
+                  const SizedBox(height: 20),
+                  FinanceCard(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Notes',
+                          style: TextStyle(
+                            color: colors.onSurfaceVariant,
+                            fontSize: 12,
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        Text(current.notes!),
+                      ],
+                    ),
+                  ),
+                ],
+                const SizedBox(height: 24),
+                FilledButton.icon(
+                  onPressed: () => showExpenseEntrySheet(
+                    context,
+                    DateTime(current.date.year, current.date.month),
+                    transaction: current,
+                  ),
+                  icon: const Icon(Icons.edit_outlined),
+                  label: const Text('Edit transaction'),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'Saved locally on this device.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: colors.onSurfaceVariant,
+                    fontSize: 12,
+                  ),
+                ),
+              ],
             ),
           ),
         ),

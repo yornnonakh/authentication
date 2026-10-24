@@ -63,19 +63,26 @@ password update or when leaving the password step.
 
 ## Personal finance
 
-`DashboardScreen` uses a floating pill navigation bar for Home, History, Settings,
-Profile and a quick-add action. The UI follows the supplied Expense Tracker
-reference: cream headers, slate backgrounds, coral pill buttons, rounded white
-panels, a green budget card and pastel category tiles. `TrackerPalette` and
+`DashboardScreen` uses a rounded white navigation bar for Home, Report, Plan and
+Settings, with a raised purple quick-add button in the center. The UI follows the
+supplied finance reference: a compact purple balance card, soft gray backgrounds,
+rounded white cards, colorful category icons and progress indicators. Profile is
+available from the Home avatar and Settings account card. `TrackerPalette` and
 `AppTheme` provide shared light/dark styling. Account, onboarding, recovery,
 entry, scanner, details, history and settings use the same visual language. System
 appearance is the default; Settings can save a light/dark override. Transaction
-rows open a detail screen with a Hero transition and an edit action.
+rows open a detail screen with a Hero transition and an edit action. Pages share
+`IosScrollPage` / `IosSliverNavigationBar` for iOS large titles that collapse on
+scroll, translucent pinned bars, and chevron back controls.
 
-The dashboard shows all-time Total Earnings, Total Spending and Available Balance
-with green/red balance styling. A seven-day bar chart shows daily spending and
-today/yesterday totals from saved transactions. Its month selector controls monthly totals,
-budgets, recent transactions and the interactive `fl_chart` spending donut.
+Home groups the all-time available balance and monthly income and expenses in one
+summary card, with grouped recent transactions, a monthly budget, and compact
+spending charts. The shared month selector controls
+monthly totals, budgets and reports. Report switches between income and expense
+distributions, with an interactive rounded donut and category rows that open a
+filtered transaction list. Comparisons use the previous calendar month. Plan shows
+the saved monthly spending goal and each category’s share of that limit; without
+a limit, it shows each category’s share of spending. All figures use saved records.
 The budget slider updates pacing while dragging and saves when released; Edit
 accepts an exact amount. Budget pacing is On Pace below 80%, Approaching Limit at 80–100%, and Over Budget
 above 100%. Amounts display in USD using `intl`; sums use integer cents to avoid

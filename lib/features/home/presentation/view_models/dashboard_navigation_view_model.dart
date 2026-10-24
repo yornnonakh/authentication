@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-enum DashboardTab { home, history, settings, profile }
+enum DashboardTab { home, report, plan, settings, profile }
 
 final dashboardNavigationViewModelProvider =
     NotifierProvider.autoDispose<DashboardNavigationViewModel, DashboardTab>(
