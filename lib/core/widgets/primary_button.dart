@@ -1,50 +1,63 @@
 import 'package:flutter/material.dart';
 
-import '../theme/app_colors.dart';
+import 'ai_dot_indicator.dart';
+import 'app_motion.dart';
 
 class PrimaryButton extends StatelessWidget {
   const PrimaryButton({
     super.key,
     required this.label,
-    required this.onPressed, // now accepts null
+    required this.onPressed,
     this.isLoading = false,
   });
 
   final String label;
-  final VoidCallback? onPressed; // ← changed to nullable
+  final VoidCallback? onPressed;
   final bool isLoading;
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
     return SizedBox(
       width: double.infinity,
       height: 52,
-      child: ElevatedButton(
-        onPressed: isLoading ? null : onPressed, // disable when loading
-        style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.primaryOrange,
-          foregroundColor: AppColors.white,
-          elevation: 0,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(14),
+      child: PressFeedback(
+        enabled: !isLoading && onPressed != null,
+        child: ElevatedButton(
+          onPressed: isLoading ? null : onPressed,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: colors.primary,
+            foregroundColor: colors.onPrimary,
+            disabledBackgroundColor: colors.primary.withValues(alpha: 0.5),
+            disabledForegroundColor: Colors.white.withValues(alpha: 0.7),
+            elevation: 0,
+            shape: const StadiumBorder(),
+          ),
+          child: AnimatedSwitcher(
+            duration: MediaQuery.disableAnimationsOf(context)
+                ? Duration.zero
+                : const Duration(milliseconds: 180),
+            child: isLoading
+                ? Semantics(
+                    key: const ValueKey('loading'),
+                    label: '$label, in progress',
+                    liveRegion: true,
+                    child: const AiDotIndicator(
+                      color: Colors.white,
+                      loop: true,
+                    ),
+                  )
+                : Text(
+                    label,
+                    key: ValueKey(label),
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
           ),
         ),
-        child: isLoading
-            ? const SizedBox(
-                width: 22,
-                height: 22,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  color: Colors.white,
-                ),
-              )
-            : Text(
-                label,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
       ),
     );
   }

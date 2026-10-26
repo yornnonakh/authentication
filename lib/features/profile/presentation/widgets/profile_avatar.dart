@@ -12,11 +12,11 @@ class ProfileAvatar extends StatelessWidget {
       width: size,
       height: size,
       alignment: Alignment.center,
-      color: const Color(0xFFE4E5EF),
+      color: Theme.of(context).colorScheme.primaryContainer,
       child: Text(
         profile?.initials ?? '?',
         style: TextStyle(
-          color: const Color(0xFF555B73),
+          color: Theme.of(context).colorScheme.onPrimaryContainer,
           fontSize: size * 0.34,
           fontWeight: FontWeight.w600,
         ),

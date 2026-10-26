@@ -1,5 +1,5 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import '../../../../core/theme/app_colors.dart';
 
 class SocialLoginRow extends StatelessWidget {
   const SocialLoginRow({
@@ -21,7 +21,7 @@ class SocialLoginRow extends StatelessWidget {
         _SocialButton(icon: Icons.apple, onTap: onApple),
         const SizedBox(width: 16),
         _SocialButton(
-          icon: Icons.g_mobiledata, // or use font_awesome / custom asset
+          icon: Icons.g_mobiledata,
           onTap: onGoogle,
           isGoogle: true,
         ),
@@ -51,27 +51,33 @@ class _SocialButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
+    final colors = Theme.of(context).colorScheme;
+    final iconColor = color ?? colors.onSurface;
+    return CupertinoButton(
+      padding: EdgeInsets.zero,
+      onPressed: onTap,
       child: Container(
-        width: 52,
-        height: 52,
+        width: 48,
+        height: 48,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: AppColors.white,
-          border: Border.all(color: AppColors.border),
+          color: colors.surfaceContainerLow,
+          border: Border.all(
+            color: colors.outline.withValues(alpha: 0.2),
+            width: 0.5,
+          ),
           boxShadow: [
             BoxShadow(
-              color: AppColors.black.withValues(alpha: 0.05),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
+              color: Colors.black.withValues(alpha: 0.03),
+              blurRadius: 10,
+              offset: const Offset(0, 3),
             ),
           ],
         ),
         child: Icon(
           icon,
           size: isGoogle ? 32 : 24,
-          color: color ?? AppColors.textPrimary,
+          color: iconColor,
         ),
       ),
     );

@@ -1,56 +1,45 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-
 import '../constants/app_constants.dart';
 
+/// A clipped, frosted surface with a translucent tint and a soft glass rim.
 class LiquidGlassContainer extends StatelessWidget {
   const LiquidGlassContainer({
     super.key,
     required this.child,
-    this.padding = const EdgeInsets.all(24),
-    this.borderRadius = AppConstants.borderRadius,
+    this.padding = const EdgeInsets.all(28),
+    this.borderRadius = 24,
     this.blur = AppConstants.glassBlur,
     this.opacity = AppConstants.glassOpacity,
-  });
+  }) : assert(blur >= 0),
+       assert(opacity >= 0 && opacity <= 1),
+       assert(borderRadius >= 0);
 
   final Widget child;
   final EdgeInsetsGeometry padding;
-  final double borderRadius;
-  final double blur;
-  final double opacity;
+  final double borderRadius, blur, opacity;
 
   @override
   Widget build(BuildContext context) {
-    final isDark =
-        Theme.of(context).brightness == Brightness.dark;
-
+    final colors = Theme.of(context).colorScheme;
+    final dark = Theme.of(context).brightness == Brightness.dark;
+    final highContrast = MediaQuery.highContrastOf(context);
     final radius = BorderRadius.circular(borderRadius);
-
-    final glassOpacity =
-    opacity.clamp(0.05, 0.32).toDouble();
-
-    final blurValue =
-    blur.clamp(0.0, 40.0).toDouble();
-
-    return Container(
+    final tint = colors.surfaceContainerLow.withValues(alpha: opacity);
+    return DecoratedBox(
       decoration: BoxDecoration(
         borderRadius: radius,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(
-              alpha: isDark ? 0.20 : 0.08,
-            ),
-            blurRadius: 30,
-            spreadRadius: -5,
+            color: colors.primary.withValues(alpha: dark ? 0.12 : 0.09),
+            blurRadius: 32,
             offset: const Offset(0, 12),
           ),
           BoxShadow(
-            color: Colors.white.withValues(
-              alpha: isDark ? 0.04 : 0.60,
-            ),
-            blurRadius: 8,
-            offset: const Offset(-2, -2),
+            color: Colors.black.withValues(alpha: dark ? 0.12 : 0.025),
+            blurRadius: 6,
+            offset: const Offset(0, 2),
           ),
         ],
       ),
@@ -58,131 +47,70 @@ class LiquidGlassContainer extends StatelessWidget {
         borderRadius: radius,
         child: BackdropFilter(
           filter: ImageFilter.blur(
-            sigmaX: blurValue,
-            sigmaY: blurValue,
+            sigmaX: highContrast ? 0 : blur,
+            sigmaY: highContrast ? 0 : blur,
           ),
-          child: Stack(
-            fit: StackFit.passthrough,
-            children: [
-              // Glass surface
-              Container(
-                padding: padding,
-                decoration: BoxDecoration(
-                  borderRadius: radius,
-
-                  // Translucent glass gradient
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: isDark
-                        ? [
-                      Colors.white.withValues(
-                        alpha: 0.16,
-                      ),
-                      const Color(0xFF18202F)
-                          .withValues(alpha: 0.22),
-                      Colors.white.withValues(
-                        alpha: 0.06,
-                      ),
-                    ]
-                        : [
-                      Colors.white.withValues(
-                        alpha: glassOpacity + 0.20,
-                      ),
-                      const Color(0xFFE5EDF8)
-                          .withValues(
-                        alpha: glassOpacity * 0.40,
-                      ),
-                      Colors.white.withValues(
-                        alpha: glassOpacity + 0.10,
-                      ),
-                    ],
-                    stops: const [0.0, 0.55, 1.0],
-                  ),
-
-                  // Glass outline
-                  border: Border.all(
-                    color: Colors.white.withValues(
-                      alpha: isDark ? 0.25 : 0.60,
-                    ),
-                    width: 1,
-                  ),
-                ),
-                child: child,
+          child: Container(
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: highContrast ? colors.surfaceContainerLow : null,
+              borderRadius: radius,
+              border: Border.all(
+                color: highContrast
+                    ? colors.outline
+                    : Colors.white.withValues(alpha: dark ? 0.2 : 0.75),
+                width: 1,
               ),
-
-              // Reflective glass edge
-              Positioned.fill(
-                child: IgnorePointer(
-                  child: CustomPaint(
-                    painter: _GlassBorderPainter(
-                      radius: borderRadius,
-                      isDark: isDark,
+              gradient: highContrast
+                  ? null
+                  : LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        Color.alphaBlend(
+                          Colors.white.withValues(alpha: dark ? 0.09 : 0.52),
+                          tint,
+                        ),
+                        Color.alphaBlend(
+                          Colors.white.withValues(alpha: dark ? 0.02 : 0.2),
+                          tint,
+                        ),
+                        Color.alphaBlend(
+                          colors.primary.withValues(alpha: dark ? 0.07 : 0.035),
+                          tint,
+                        ),
+                      ],
+                      stops: const [0, 0.55, 1],
+                    ),
+            ),
+            child: Stack(
+              children: [
+                Padding(padding: padding, child: child),
+                if (!highContrast)
+                  Positioned(
+                    top: 1,
+                    left: borderRadius,
+                    right: borderRadius,
+                    child: IgnorePointer(
+                      child: Container(
+                        height: 1,
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              Colors.white.withValues(alpha: 0),
+                              Colors.white.withValues(alpha: dark ? 0.3 : 0.9),
+                              Colors.white.withValues(alpha: 0),
+                            ],
+                          ),
+                        ),
+                      ),
                     ),
                   ),
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
     );
-  }
-}
-
-// iOS-inspired reflective edge
-class _GlassBorderPainter extends CustomPainter {
-  const _GlassBorderPainter({
-    required this.radius,
-    required this.isDark,
-  });
-
-  final double radius;
-  final bool isDark;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    if (size.isEmpty) return;
-
-    final rect = (Offset.zero & size).deflate(1);
-
-    final rrect = RRect.fromRectAndRadius(
-      rect,
-      Radius.circular(
-        (radius - 1).clamp(0.0, 1000.0).toDouble(),
-      ),
-    );
-
-    final gradient = LinearGradient(
-      begin: Alignment.topLeft,
-      end: Alignment.bottomRight,
-      colors: [
-        Colors.white.withValues(
-          alpha: isDark ? 0.65 : 0.95,
-        ),
-        Colors.white.withValues(alpha: 0.30),
-        Colors.white.withValues(alpha: 0.05),
-        Colors.white.withValues(
-          alpha: isDark ? 0.22 : 0.55,
-        ),
-      ],
-      stops: const [0.0, 0.30, 0.70, 1.0],
-    );
-
-    final paint = Paint()
-      ..shader = gradient.createShader(rect)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.5
-      ..isAntiAlias = true;
-
-    canvas.drawRRect(rrect, paint);
-  }
-
-  @override
-  bool shouldRepaint(
-      covariant _GlassBorderPainter oldDelegate,
-      ) {
-    return oldDelegate.radius != radius ||
-        oldDelegate.isDark != isDark;
   }
 }

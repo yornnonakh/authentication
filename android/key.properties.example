@@ -1,0 +1,6 @@
+# Copy to key.properties, fill in locally, and keep the populated file private.
+# Resolve relative storeFile paths from android/, or use an absolute path.
+storeFile=
+storePassword=
+keyAlias=
+keyPassword=

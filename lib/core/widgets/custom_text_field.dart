@@ -1,6 +1,5 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
-import '../theme/app_colors.dart';
 
 class CustomTextField extends StatelessWidget {
   const CustomTextField({
@@ -8,78 +7,105 @@ class CustomTextField extends StatelessWidget {
     required this.label,
     required this.hint,
     this.controller,
+    this.focusNode,
     this.obscureText = false,
     this.keyboardType = TextInputType.text,
     this.prefixIcon,
     this.suffixIcon,
     this.onSuffixTap,
+    this.focusedBottomSpace = 0,
   });
 
-  final String label;
-  final String hint;
+  final String label, hint;
   final TextEditingController? controller;
+  final FocusNode? focusNode;
   final bool obscureText;
   final TextInputType keyboardType;
-  final IconData? prefixIcon;
-  final IconData? suffixIcon;
+  final IconData? prefixIcon, suffixIcon;
   final VoidCallback? onSuffixTap;
+  final double focusedBottomSpace;
 
   @override
   Widget build(BuildContext context) {
-    return TextFormField(
-      controller: controller,
-      obscureText: obscureText,
-      keyboardType: keyboardType,
-      decoration: InputDecoration(
-        labelText: label,
-        hintText: hint,
-        hintStyle: TextStyle(
-          color: AppColors.textSecondary.withValues(alpha: 0.5),
-        ),
-        labelStyle: const TextStyle(
-          color: AppColors.textSecondary,
-          fontSize: 14,
-        ),
-        prefixIcon: prefixIcon != null
-            ? Icon(
-                prefixIcon,
-                color: AppColors.textSecondary,
-                size: 20,
-              )
-            : null,
-        filled: true,
-        fillColor: Colors.white.withValues(alpha: 0.65),
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 18,
-          vertical: 18,
-        ),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(
-            color: Colors.grey.withValues(alpha: 0.25),
+    final colors = Theme.of(context).colorScheme;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (label.isNotEmpty) ...[
+          Padding(
+            padding: const EdgeInsets.only(left: 8, bottom: 6),
+            child: Text(
+              label,
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: colors.onSurface.withValues(alpha: 0.8),
+                letterSpacing: -0.2,
+              ),
+            ),
+          ),
+        ],
+        TextFormField(
+          controller: controller,
+          focusNode: focusNode,
+          obscureText: obscureText,
+          keyboardType: keyboardType,
+          style: TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.w500,
+            color: colors.onSurface,
+          ),
+          decoration: InputDecoration(
+            hintText: hint,
+            hintStyle: TextStyle(
+              fontSize: 14,
+              color: colors.onSurfaceVariant.withValues(alpha: 0.6),
+            ),
+            filled: true,
+            fillColor: colors.surfaceContainer,
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 20,
+              vertical: 16,
+            ),
+            prefixIcon: prefixIcon == null
+                ? null
+                : Icon(
+                    prefixIcon,
+                    size: 20,
+                    color: colors.onSurfaceVariant.withValues(alpha: 0.8),
+                  ),
+            suffixIcon: suffixIcon == null
+                ? null
+                : CupertinoButton(
+                    padding: EdgeInsets.zero,
+                    onPressed: onSuffixTap,
+                    child: Icon(
+                      suffixIcon,
+                      size: 20,
+                      color: colors.onSurfaceVariant.withValues(alpha: 0.8),
+                    ),
+                  ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(24),
+              borderSide: BorderSide.none,
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(24),
+              borderSide: BorderSide.none,
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(24),
+              borderSide: BorderSide(color: colors.primary, width: 1.5),
+            ),
           ),
         ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: const BorderSide(
-            color: AppColors.primaryOrange,
-            width: 1.6,
+        if (focusNode != null && focusedBottomSpace > 0)
+          ListenableBuilder(
+            listenable: focusNode!,
+            builder: (context, child) =>
+                SizedBox(height: focusNode!.hasFocus ? focusedBottomSpace : 0),
           ),
-        ),
-        suffixIcon: suffixIcon != null
-            ? IconButton(
-                icon: Icon(
-                  suffixIcon,
-                  color: AppColors.textSecondary,
-                  size: 20,
-                ),
-                onPressed: onSuffixTap,
-              )
-            : null,
-      ),
+      ],
     );
   }
 }

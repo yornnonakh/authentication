@@ -14,6 +14,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../support/profile_fakes.dart';
+import '../support/motion_settings.dart';
 
 void main() {
   late FakeLogoutRepository auth;
@@ -27,6 +28,7 @@ void main() {
   tearDown(() => auth.events.close());
 
   Future<void> mountApp(WidgetTester tester) async {
+    useReducedMotion(tester);
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
@@ -76,6 +78,7 @@ void main() {
         'fixture-password',
       );
       await tester.ensureVisible(find.text('Sign In'));
+      await tester.pumpAndSettle();
       await tester.tap(find.text('Sign In'));
       await tester.pumpAndSettle();
 
@@ -96,9 +99,7 @@ void main() {
     };
 
     for (final entry in routeMap.entries) {
-      final route = AppRoutes.onGenerateRoute(
-        RouteSettings(name: entry.key),
-      );
+      final route = AppRoutes.onGenerateRoute(RouteSettings(name: entry.key));
       expect(route, isNotNull);
     }
 

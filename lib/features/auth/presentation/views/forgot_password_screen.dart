@@ -1,11 +1,12 @@
+import '../../../../core/widgets/ios_scroll_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../app/app_routes.dart';
-import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/custom_text_field.dart';
 import '../../../../core/widgets/liquid_glass_container.dart';
+import '../../../../core/widgets/tracker_backdrop.dart';
 import '../../../../core/widgets/primary_button.dart';
 import '../view_models/recovery_state.dart';
 import '../view_models/recovery_view_model.dart';
@@ -70,10 +71,9 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
   }
 
   void _openSignIn() {
-    Navigator.of(context).pushNamedAndRemoveUntil(
-      AppRoutes.signIn,
-      (route) => false,
-    );
+    Navigator.of(
+      context,
+    ).pushNamedAndRemoveUntil(AppRoutes.signIn, (route) => false);
   }
 
   Future<void> _handleBack() async {
@@ -84,7 +84,8 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
       case RecoveryBackResult.stay:
         break;
       case RecoveryBackResult.pop:
-        Navigator.of(context).maybePop();
+        final didPop = await Navigator.of(context).maybePop();
+        if (mounted && !didPop) _openSignIn();
       case RecoveryBackResult.signIn:
         _openSignIn();
     }
@@ -125,14 +126,18 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
 
                         decoration: BoxDecoration(
                           color: isActive
-                              ? AppColors.primaryOrange.withValues(alpha: 0.09)
-                              : Colors.white.withValues(alpha: 0.65),
+                              ? Theme.of(
+                                  context,
+                                ).colorScheme.primary.withValues(alpha: 0.09)
+                              : Theme.of(
+                                  context,
+                                ).colorScheme.surfaceContainerLow,
 
                           borderRadius: BorderRadius.circular(14),
 
                           border: Border.all(
                             color: isActive
-                                ? AppColors.primaryOrange
+                                ? Theme.of(context).colorScheme.primary
                                 : Colors.grey.withValues(alpha: 0.25),
                             width: isActive ? 2 : 1,
                           ),
@@ -140,9 +145,8 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                           boxShadow: isActive
                               ? [
                                   BoxShadow(
-                                    color: AppColors.primaryOrange.withValues(
-                                      alpha: 0.12,
-                                    ),
+                                    color: Theme.of(context).colorScheme.primary
+                                        .withValues(alpha: 0.12),
                                     blurRadius: 12,
                                     offset: const Offset(0, 4),
                                   ),
@@ -158,10 +162,10 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                             key: ValueKey(
                               '$index-${hasValue ? code[index] : ''}',
                             ),
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 24,
                               fontWeight: FontWeight.w700,
-                              color: AppColors.textPrimary,
+                              color: Theme.of(context).colorScheme.onSurface,
                             ),
                           ),
                         ),
@@ -203,6 +207,8 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
               style: const TextStyle(color: Colors.transparent, fontSize: 1),
 
               decoration: const InputDecoration(
+                // The digits are painted by the boxes behind this input.
+                filled: false,
                 border: InputBorder.none,
                 enabledBorder: InputBorder.none,
                 focusedBorder: InputBorder.none,
@@ -224,26 +230,26 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        const Text(
+        Text(
           'Forgot Password?',
           textAlign: TextAlign.center,
           style: TextStyle(
             fontSize: 26,
             fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
+            color: Theme.of(context).colorScheme.onSurface,
           ),
         ),
 
         const SizedBox(height: 12),
 
-        const Text(
+        Text(
           "Don't worry! Enter your registered email "
           "address and we'll send you a verification code.",
           textAlign: TextAlign.center,
           style: TextStyle(
             fontSize: 14,
             height: 1.6,
-            color: AppColors.textSecondary,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
           ),
         ),
 
@@ -271,7 +277,9 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
           onPressed: _isLoading ? null : _handleBack,
           icon: const Icon(Icons.arrow_back_rounded, size: 18),
           label: const Text('Back to Sign In'),
-          style: TextButton.styleFrom(foregroundColor: AppColors.primaryOrange),
+          style: TextButton.styleFrom(
+            foregroundColor: Theme.of(context).colorScheme.primary,
+          ),
         ),
       ],
     );
@@ -286,24 +294,24 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         // TITLE
-        const Text(
+        Text(
           'Check Your Email',
           textAlign: TextAlign.center,
           style: TextStyle(
             fontSize: 26,
             fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
+            color: Theme.of(context).colorScheme.onSurface,
           ),
         ),
 
         const SizedBox(height: 12),
 
-        const Text(
+        Text(
           'Enter the 6-digit recovery code sent to',
           textAlign: TextAlign.center,
           style: TextStyle(
             fontSize: 14,
-            color: AppColors.textSecondary,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
             height: 1.6,
           ),
         ),
@@ -314,10 +322,10 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
         Text(
           _email,
           textAlign: TextAlign.center,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w700,
-            color: AppColors.textPrimary,
+            color: Theme.of(context).colorScheme.onSurface,
           ),
         ),
 
@@ -334,9 +342,12 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
           crossAxisAlignment: WrapCrossAlignment.center,
           spacing: 4,
           children: [
-            const Text(
+            Text(
               "Didn't receive the code?",
-              style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
+              style: TextStyle(
+                fontSize: 13,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
             ),
 
             TextButton(
@@ -352,7 +363,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                   fontWeight: FontWeight.w600,
                   color: _isLoading || _resendSeconds > 0
                       ? Colors.grey
-                      : AppColors.primaryOrange,
+                      : Theme.of(context).colorScheme.primary,
                 ),
               ),
             ),
@@ -375,16 +386,18 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
           padding: const EdgeInsets.all(14),
 
           decoration: BoxDecoration(
-            color: AppColors.primaryOrange.withValues(alpha: 0.07),
+            color: Theme.of(
+              context,
+            ).colorScheme.primary.withValues(alpha: 0.07),
             borderRadius: BorderRadius.circular(14),
           ),
 
-          child: const Row(
+          child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Icon(
                 Icons.info_outline_rounded,
-                color: AppColors.primaryOrange,
+                color: Theme.of(context).colorScheme.primary,
                 size: 20,
               ),
 
@@ -397,7 +410,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                   style: TextStyle(
                     fontSize: 12,
                     height: 1.5,
-                    color: AppColors.textSecondary,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                 ),
               ),
@@ -415,7 +428,9 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
 
           label: const Text('Change Email Address'),
 
-          style: TextButton.styleFrom(foregroundColor: AppColors.primaryOrange),
+          style: TextButton.styleFrom(
+            foregroundColor: Theme.of(context).colorScheme.primary,
+          ),
         ),
       ],
     );
@@ -429,25 +444,25 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        const Text(
+        Text(
           'Create New Password',
           textAlign: TextAlign.center,
           style: TextStyle(
             fontSize: 26,
             fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
+            color: Theme.of(context).colorScheme.onSurface,
           ),
         ),
 
         const SizedBox(height: 12),
 
-        const Text(
+        Text(
           'Your email is verified. '
           'Create a secure new password.',
           textAlign: TextAlign.center,
           style: TextStyle(
             fontSize: 14,
-            color: AppColors.textSecondary,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
             height: 1.6,
           ),
         ),
@@ -492,9 +507,12 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
 
         const SizedBox(height: 12),
 
-        const Text(
+        Text(
           'Password must be at least 8 characters.',
-          style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+          style: TextStyle(
+            fontSize: 12,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+          ),
         ),
 
         const SizedBox(height: 28),
@@ -510,9 +528,11 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
 
         TextButton(
           onPressed: _isLoading ? null : _handleBack,
-          child: const Text(
+          child: Text(
             'Cancel Recovery',
-            style: TextStyle(color: AppColors.textSecondary),
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
           ),
         ),
       ],
@@ -541,86 +561,74 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
       },
 
       child: AuthBackground(
-        child: SafeArea(
-          child: Center(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 460),
-
+        child: IosScrollPage(
+          title: switch (_step) {
+            RecoveryStep.email => 'Password recovery',
+            RecoveryStep.otp => 'Verify recovery code',
+            _ => 'Reset password',
+          },
+          onBack: _handleBack,
+          backEnabled: !_isLoading,
+          maxContentWidth: 460,
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+          child: Column(
+            children: [
+              const TrackerCoinMark(size: 64),
+              const SizedBox(height: 28),
+              // Rounded form surface
+              LiquidGlassContainer(
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // LIQUID GLASS CARD
-                    LiquidGlassContainer(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // BACK BUTTON AT THE TOP INSIDE CONTAINER
-                          IconButton(
-                            onPressed: _isLoading ? null : _handleBack,
-                            padding: EdgeInsets.zero,
-                            alignment: Alignment.centerLeft,
-                            icon: const Icon(
-                              Icons.arrow_back_ios_new_rounded,
-                              size: 20,
-                            ),
-                          ),
+                    // ICON
+                    Center(
+                      child: Container(
+                        width: 76,
+                        height: 76,
 
-                          const SizedBox(height: 16),
+                        decoration: BoxDecoration(
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.primary.withValues(alpha: 0.12),
 
-                          // ICON
-                          Center(
-                            child: Container(
-                              width: 76,
-                              height: 76,
+                          borderRadius: BorderRadius.circular(24),
+                        ),
 
-                              decoration: BoxDecoration(
-                                color: AppColors.primaryOrange.withValues(
-                                  alpha: 0.12,
-                                ),
+                        child: Icon(
+                          _step == RecoveryStep.email
+                              ? Icons.lock_reset_rounded
+                              : _step == RecoveryStep.otp
+                              ? Icons.mark_email_read_outlined
+                              : Icons.shield_outlined,
 
-                                borderRadius: BorderRadius.circular(24),
-                              ),
+                          size: 36,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                      ),
+                    ),
 
-                              child: Icon(
-                                _step == RecoveryStep.email
-                                    ? Icons.lock_reset_rounded
-                                    : _step == RecoveryStep.otp
-                                    ? Icons.mark_email_read_outlined
-                                    : Icons.shield_outlined,
+                    const SizedBox(height: 26),
 
-                                size: 36,
-                                color: AppColors.primaryOrange,
-                              ),
-                            ),
-                          ),
+                    // ANIMATED SCREEN TRANSITIONS
+                    AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 250),
 
-                          const SizedBox(height: 26),
+                      child: KeyedSubtree(
+                        key: ValueKey(_step),
 
-                          // ANIMATED SCREEN TRANSITIONS
-                          AnimatedSwitcher(
-                            duration: const Duration(milliseconds: 250),
+                        child: switch (_step) {
+                          RecoveryStep.email => _buildEmailStep(),
 
-                            child: KeyedSubtree(
-                              key: ValueKey(_step),
+                          RecoveryStep.otp => _buildOtpStep(),
 
-                              child: switch (_step) {
-                                RecoveryStep.email => _buildEmailStep(),
-
-                                RecoveryStep.otp => _buildOtpStep(),
-
-                                RecoveryStep.password => _buildPasswordStep(),
-                              },
-                            ),
-                          ),
-                        ],
+                          RecoveryStep.password => _buildPasswordStep(),
+                        },
                       ),
                     ),
                   ],
                 ),
               ),
-            ),
+            ],
           ),
         ),
       ),

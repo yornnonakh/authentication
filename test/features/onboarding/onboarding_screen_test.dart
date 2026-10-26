@@ -11,6 +11,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../support/profile_fakes.dart';
+import '../../support/motion_settings.dart';
 
 void main() {
   late FakeLogoutRepository auth;
@@ -22,6 +23,7 @@ void main() {
   tearDown(() => auth.events.close());
 
   Future<void> mount(WidgetTester tester) async {
+    useReducedMotion(tester);
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
@@ -37,6 +39,7 @@ void main() {
 
   Future<void> completeOnboarding(WidgetTester tester) async {
     for (int i = 0; i < 3; i++) {
+      if (find.byType(OnboardingScreen).evaluate().isEmpty) break;
       final btn = find.byType(ElevatedButton);
       if (btn.evaluate().isNotEmpty) {
         await tester.tap(btn.first);
@@ -77,20 +80,21 @@ void main() {
     expect(auth.signOutCalls, 0);
   });
 
-  testWidgets('completion remembers onboarding and shows onboarding on next startup when unauthenticated', (
-    tester,
-  ) async {
-    await mount(tester);
-    await tester.pumpAndSettle();
-    await completeOnboarding(tester);
-    expect(find.byType(SignInScreen), findsOneWidget);
-    expect(onboarding.completed, isTrue);
-    await tester.pumpWidget(const SizedBox());
-    await tester.pumpAndSettle();
-    await mount(tester);
-    await tester.pumpAndSettle();
-    expect(find.byType(OnboardingScreen), findsOneWidget);
-  });
+  testWidgets(
+    'completion remembers onboarding and shows onboarding on next startup when unauthenticated',
+    (tester) async {
+      await mount(tester);
+      await tester.pumpAndSettle();
+      await completeOnboarding(tester);
+      expect(find.byType(SignInScreen), findsOneWidget);
+      expect(onboarding.completed, isTrue);
+      await tester.pumpWidget(const SizedBox());
+      await tester.pumpAndSettle();
+      await mount(tester);
+      await tester.pumpAndSettle();
+      expect(find.byType(OnboardingScreen), findsOneWidget);
+    },
+  );
 
   testWidgets('restored account bypasses onboarding even on first launch', (
     tester,

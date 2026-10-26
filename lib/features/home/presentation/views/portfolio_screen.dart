@@ -1,8 +1,8 @@
+import '../../../../core/widgets/ios_scroll_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../domain/models/dashboard.dart';
-import '../theme/dashboard_colors.dart';
 import '../view_models/dashboard_navigation_view_model.dart';
 import '../view_models/home_view_model.dart';
 import '../widgets/dashboard_icon_button.dart';
@@ -18,42 +18,19 @@ class PortfolioScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final dashboard = ref.watch(homeViewModelProvider);
     final bottomInset = MediaQuery.paddingOf(context).bottom;
-    return SingleChildScrollView(
+    return IosScrollPage(
       key: const PageStorageKey('portfolio-scroll'),
+      title: 'Portfolio',
+      onBack: ref.read(dashboardNavigationViewModelProvider.notifier).showHome,
+      backLabel: 'Home',
+      trailing: DashboardIconButton(
+        icon: Icons.forum_outlined,
+        tooltip: 'Messages',
+        onPressed: () {},
+      ),
       padding: EdgeInsets.fromLTRB(20, 12, 20, 108 + bottomInset),
       child: Column(
         children: [
-          Row(
-            children: [
-              IconButton(
-                tooltip: 'Back to home',
-                onPressed: ref
-                    .read(dashboardNavigationViewModelProvider.notifier)
-                    .showHome,
-                icon: const Icon(
-                  Icons.chevron_left_rounded,
-                  color: DashboardColors.ink,
-                  size: 26,
-                ),
-              ),
-              const Expanded(
-                child: Text(
-                  'Portfolio',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w500,
-                    color: DashboardColors.ink,
-                  ),
-                ),
-              ),
-              DashboardIconButton(
-                icon: Icons.forum_outlined,
-                tooltip: 'Messages',
-                onPressed: () {},
-              ),
-            ],
-          ),
           const SizedBox(height: 40),
           PortfolioChart(
             balance: dashboard.wallet.balance,
