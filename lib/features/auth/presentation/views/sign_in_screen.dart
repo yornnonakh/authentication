@@ -116,7 +116,6 @@ class _SignInFormState extends ConsumerState<_SignInForm> {
             prefixIcon: Icons.mail_outline_rounded,
             controller: _emailController,
             focusNode: _emailFocus,
-            focusedBottomSpace: 184,
             keyboardType: TextInputType.emailAddress,
           ),
           const SizedBox(height: 16),
@@ -140,6 +139,10 @@ class _SignInFormState extends ConsumerState<_SignInForm> {
               onPressed: _isLoading
                   ? null
                   : () {
+                      FocusManager.instance.primaryFocus?.unfocus();
+                      // Apply before pushing so route focus restoration cannot
+                      // bring back the keyboard when recovery closes.
+                      FocusManager.instance.applyFocusChangesIfNeeded();
                       ref
                           .read(signInViewModelProvider.notifier)
                           .cancelGoogleSignIn();

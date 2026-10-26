@@ -1,26 +1,10 @@
-
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-
-    <!-- ========================================== -->
-    <!-- INTERNET PERMISSION -->
-    <!-- ========================================== -->
-
     <uses-permission
         android:name="android.permission.INTERNET" />
-
-    <!-- ========================================== -->
-    <!-- APPLICATION -->
-    <!-- ========================================== -->
-
     <application
-        android:label="Expense Tracker"
+        android:label="Finsight"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
-
-        <!-- ====================================== -->
-        <!-- MAIN ACTIVITY -->
-        <!-- ====================================== -->
-
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -30,86 +14,34 @@
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
             android:hardwareAccelerated="true"
             android:windowSoftInputMode="adjustResize">
-
-            <!-- ================================== -->
-            <!-- FLUTTER NORMAL THEME -->
-            <!-- ================================== -->
-
             <meta-data
                 android:name="io.flutter.embedding.android.NormalTheme"
                 android:resource="@style/NormalTheme" />
-
-            <!-- ================================== -->
-            <!-- SUPABASE DEEP LINK CONFIGURATION -->
-            <!-- ================================== -->
-
-            <!--
-                Disable Flutter's default deep link
-                handler to allow Supabase Flutter
-                app_links to process OAuth callbacks.
-            -->
-
             <meta-data
                 android:name="flutter_deeplinking_enabled"
                 android:value="false" />
-
-            <!-- ================================== -->
-            <!-- MAIN LAUNCHER -->
-            <!-- ================================== -->
-
             <intent-filter>
                 <action
                     android:name="android.intent.action.MAIN" />
-
                 <category
                     android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
-            <!-- ================================== -->
-            <!-- GOOGLE OAUTH / SUPABASE CALLBACK -->
-            <!-- ================================== -->
-
-            <!--
-                Callback URL:
-
-                com.finsight.auth://login-callback/
-
-                Must match the redirectTo parameter
-                in Flutter AuthService and the
-                Supabase Redirect URLs allowlist.
-            -->
-
             <intent-filter>
                 <action
                     android:name="android.intent.action.VIEW" />
-
                 <category
                     android:name="android.intent.category.DEFAULT" />
-
                 <category
                     android:name="android.intent.category.BROWSABLE" />
-
                 <data
                     android:scheme="com.finsight.auth"
                     android:host="login-callback" />
             </intent-filter>
-
         </activity>
-
-        <!-- ====================================== -->
-        <!-- FLUTTER EMBEDDING -->
-        <!-- ====================================== -->
-
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
-
     </application>
-
-    <!-- ========================================== -->
-    <!-- PACKAGE VISIBILITY -->
-    <!-- ========================================== -->
-
     <queries>
         <intent>
             <action

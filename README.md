@@ -2,6 +2,9 @@
 
 Flutter authentication and expense tracker UI using MVVM and Riverpod.
 
+Android release setup and outstanding Google Play requirements are documented in
+[Google Play release](docs/google-play-release.md).
+
 ## Folder structure
 
 ```text

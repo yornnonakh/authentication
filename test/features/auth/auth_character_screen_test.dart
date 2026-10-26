@@ -57,7 +57,7 @@ void main() {
       );
       final robotRect = tester.getRect(find.byType(AuthCharacter));
       final cardRect = tester.getRect(find.byType(LiquidGlassContainer));
-      expect(robotRect.top, greaterThan(cardRect.bottom));
+      expect(robotRect.bottom, lessThan(cardRect.top));
       expect(find.byType(AppBar), findsNothing);
       expect(find.byType(FinsightBrand), findsNothing);
       expect(find.byTooltip('Back'), findsNothing);
@@ -124,11 +124,13 @@ void main() {
       (tester) async {
         await mount(tester, signUp: signUp);
         final robot = find.byType(AuthCharacter);
-        final initialTop = tester.getTopLeft(robot).dy;
         final email = find.byType(TextFormField).at(signUp ? 1 : 0);
         await tester.enterText(email, 'user@example.com');
         await tester.pumpAndSettle();
-        expect(tester.getTopLeft(robot).dy, lessThan(initialTop));
+        expect(
+          tester.getBottomRight(robot).dy,
+          lessThan(tester.getTopLeft(find.byType(CustomScrollView)).dy),
+        );
 
         final controller = tester.widget<TextFormField>(email).controller!;
         controller.selection = const TextSelection.collapsed(offset: 0);
@@ -145,15 +147,15 @@ void main() {
         );
         await tester.pumpAndSettle();
         expect(
-          tester.getTopLeft(robot).dy,
-          closeTo(tester.getTopLeft(find.byType(LiquidGlassContainer)).dy, 0.1),
+          tester.getBottomRight(robot).dy,
+          lessThan(tester.getTopLeft(find.byType(CustomScrollView)).dy),
         );
         expect(tester.takeException(), isNull);
       },
     );
 
     testWidgets(
-      '$name email tap places the robot below the input with clear space',
+      '$name robot stays pinned and keeps inputs clear while scrolling and typing',
       (tester) async {
         await mount(tester, signUp: signUp, width: 320, textScale: 1.5);
         final email = find.byType(TextFormField).at(signUp ? 1 : 0);
@@ -163,27 +165,63 @@ void main() {
         );
         final password = find.byType(TextFormField).last;
         final robot = find.byType(AuthCharacter);
+        final scrollView = find.byType(CustomScrollView);
+        final robotTop = tester.getTopLeft(robot).dy;
+        final heading = find.text(
+          signUp ? 'Create your account' : 'Welcome back',
+        );
+        final headingTop = tester.getTopLeft(heading).dy;
 
-        Future<void> expectBelow() async {
+        await tester.drag(scrollView, const Offset(0, -180));
+        await tester.pumpAndSettle();
+        expect(tester.getTopLeft(robot).dy, closeTo(robotTop, 0.1));
+        expect(tester.getTopLeft(heading).dy, lessThan(headingTop));
+
+        Future<void> expectInputsClear() async {
           await tester.pumpAndSettle();
           final field = tester.getRect(emailInput);
           final companion = tester.getRect(robot);
-          expect(companion.top, greaterThan(field.bottom));
-          expect(companion.bottom, lessThan(tester.getTopLeft(password).dy));
+          final viewport = tester.getRect(scrollView);
+          for (final element in find.byType(TextFormField).evaluate()) {
+            final input = tester.getRect(find.byWidget(element.widget));
+            if (input.overlaps(viewport)) {
+              expect(
+                companion.overlaps(input.intersect(viewport)),
+                isFalse,
+                reason: 'The robot must not obscure an input or its text.',
+              );
+            }
+          }
+          expect(companion.bottom, lessThan(viewport.top));
+          expect(tester.getTopLeft(password).dy - field.bottom, lessThan(100));
         }
 
         await tester.ensureVisible(email);
         await tester.tap(email);
-        await expectBelow();
+        await expectInputsClear();
         // Tapping the same focused field and typing must preserve the placement.
         await tester.tap(email);
-        await expectBelow();
+        await expectInputsClear();
         await tester.enterText(email, 'user@example.com');
-        await expectBelow();
+        await expectInputsClear();
+        await tester.enterText(
+          email,
+          'a.long.email.address.for.testing@example.com',
+        );
+        await expectInputsClear();
+
+        tester.view.viewInsets = FakeViewPadding(
+          bottom: 300 * tester.view.devicePixelRatio,
+        );
+        addTearDown(tester.view.resetViewInsets);
+        await tester.pumpAndSettle();
+        await tester.ensureVisible(email);
+        await expectInputsClear();
+        expect(emailInput.hitTestable(), findsOneWidget);
 
         await tester.ensureVisible(password);
         await tester.tap(password);
-        await tester.pumpAndSettle();
+        await expectInputsClear();
         expect(tester.widget<AuthCharacter>(robot).passwordFocused, isTrue);
         expect(
           tester.getTopLeft(password).dy - tester.getBottomRight(emailInput).dy,
@@ -193,6 +231,26 @@ void main() {
       },
     );
   }
+
+  testWidgets('sign in robot returns home after keyboard dismissal', (
+    tester,
+  ) async {
+    await mount(tester, signUp: false);
+    final robot = find.byType(AuthCharacter);
+    final viewport = find.byType(CustomScrollView);
+    await tester.enterText(
+      find.byType(TextFormField).first,
+      'user@example.com',
+    );
+    await tester.pumpAndSettle();
+    FocusManager.instance.primaryFocus?.unfocus();
+    await tester.pumpAndSettle();
+    expect(
+      tester.getBottomRight(robot).dy,
+      lessThan(tester.getTopLeft(viewport).dy),
+    );
+    expect(tester.takeException(), isNull);
+  });
 
   for (final style in AuthCharacterStyle.values) {
     testWidgets('$style loops, pauses offscreen, and respects reduced motion', (

@@ -84,7 +84,8 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
       case RecoveryBackResult.stay:
         break;
       case RecoveryBackResult.pop:
-        Navigator.of(context).maybePop();
+        final didPop = await Navigator.of(context).maybePop();
+        if (mounted && !didPop) _openSignIn();
       case RecoveryBackResult.signIn:
         _openSignIn();
     }
@@ -206,6 +207,8 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
               style: const TextStyle(color: Colors.transparent, fontSize: 1),
 
               decoration: const InputDecoration(
+                // The digits are painted by the boxes behind this input.
+                filled: false,
                 border: InputBorder.none,
                 enabledBorder: InputBorder.none,
                 focusedBorder: InputBorder.none,

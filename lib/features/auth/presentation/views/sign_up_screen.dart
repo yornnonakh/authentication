@@ -122,7 +122,6 @@ class _SignUpFormState extends ConsumerState<_SignUpForm> {
             prefixIcon: Icons.mail_outline_rounded,
             controller: _emailController,
             focusNode: _emailFocus,
-            focusedBottomSpace: 184,
             keyboardType: TextInputType.emailAddress,
           ),
           const SizedBox(height: 16),
