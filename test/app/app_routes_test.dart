@@ -61,6 +61,7 @@ void main() {
       expect(find.byType(OnboardingScreen), findsNothing);
 
       // 2. Splash screen transitions to Onboarding screen
+      await tester.pump(const Duration(milliseconds: 1100));
       await tester.pumpAndSettle();
       expect(find.byType(OnboardingScreen), findsOneWidget);
 

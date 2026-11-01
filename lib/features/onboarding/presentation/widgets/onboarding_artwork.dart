@@ -1,412 +1,431 @@
 import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
-import '../../../../core/theme/welcome_colors.dart';
+import '../../../../core/theme/tracker_palette.dart';
 import '../../domain/models/onboarding_page.dart';
 
+/// Flat, resolution-independent scenes drawn directly on the page canvas.
 class OnboardingArtwork extends StatelessWidget {
   const OnboardingArtwork({super.key, required this.illustration});
+
   final OnboardingIllustration illustration;
 
   @override
   Widget build(BuildContext context) => ExcludeSemantics(
-    child: MediaQuery.withNoTextScaling(
-      child: FittedBox(
-        fit: BoxFit.contain,
-        child: SizedBox(
-          width: 360,
-          height: 310,
-          child: Stack(
-            clipBehavior: Clip.none,
-            children: [
-              const Positioned.fill(
-                child: CustomPaint(painter: _OrbitPainter()),
-              ),
-              Positioned(
-                left: 28,
-                top: 62,
-                child: Transform.rotate(
-                  angle: -.2,
-                  child: Opacity(
-                    opacity: illustration == OnboardingIllustration.security
-                        ? .45
-                        : 1,
-                    child: const _DebitCard(),
-                  ),
-                ),
-              ),
-              if (illustration == OnboardingIllustration.growth)
-                Positioned(
-                  right: 4,
-                  bottom: 5,
-                  child: Container(
-                    width: 154,
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFF8FBFF),
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: Colors.white, width: 2),
-                      boxShadow: const [
-                        BoxShadow(
-                          color: Color(0x18345AA7),
-                          blurRadius: 24,
-                          offset: Offset(0, 10),
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Your portfolio',
-                          style: TextStyle(
-                            fontSize: 11,
-                            color: WelcomeColors.muted,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        const Row(
-                          children: [
-                            Icon(
-                              Icons.trending_up_rounded,
-                              size: 20,
-                              color: WelcomeColors.navy,
-                            ),
-                            SizedBox(width: 6),
-                            Expanded(
-                              child: Text(
-                                'Keep growing',
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: WelcomeColors.navy,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 10),
-                        const SizedBox(
-                          height: 30,
-                          width: double.infinity,
-                          child: CustomPaint(painter: _GrowthPainter()),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              if (illustration == OnboardingIllustration.security)
-                Positioned(
-                  left: 115,
-                  top: 102,
-                  child: Container(
-                    width: 130,
-                    height: 148,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFF8FBFF),
-                      borderRadius: BorderRadius.circular(36),
-                      border: Border.all(color: Colors.white, width: 3),
-                      boxShadow: const [
-                        BoxShadow(
-                          color: Color(0x24325291),
-                          blurRadius: 28,
-                          offset: Offset(0, 12),
-                        ),
-                      ],
-                    ),
-                    child: const Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        Icon(
-                          Icons.shield_rounded,
-                          size: 92,
-                          color: WelcomeColors.navy,
-                        ),
-                        Icon(
-                          Icons.lock_outline_rounded,
-                          size: 36,
-                          color: Colors.white,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-            ],
-          ),
-        ),
+    child: CustomPaint(
+      painter: _OnboardingScene(
+        illustration,
+        colors: Theme.of(context).colorScheme,
       ),
+      size: const Size.square(320),
     ),
   );
 }
 
-class _DebitCard extends StatelessWidget {
-  const _DebitCard();
-  @override
-  Widget build(BuildContext context) => Container(
-    width: 304,
-    height: 192,
-    decoration: BoxDecoration(
-      borderRadius: BorderRadius.circular(21),
-      gradient: const LinearGradient(
-        begin: Alignment.topRight,
-        end: Alignment.bottomLeft,
-        colors: [Color(0xFF385895), Color(0xFF111F48)],
-      ),
-      boxShadow: const [
-        BoxShadow(
-          color: Color(0x334266AA),
-          blurRadius: 24,
-          offset: Offset(0, 18),
-        ),
-      ],
-    ),
-    child: ClipRRect(
-      borderRadius: BorderRadius.circular(21),
-      child: Stack(
-        children: [
-          const Positioned.fill(
-            child: CustomPaint(painter: _CardShinePainter()),
-          ),
-          const Positioned(
-            top: 24,
-            left: 23,
-            child: Text(
-              'Expense Tracker',
-              style: TextStyle(
-                fontSize: 23,
-                letterSpacing: -.5,
-                fontWeight: FontWeight.w500,
-                color: Color(0xFFE2E9FF),
-              ),
-            ),
-          ),
-          Positioned(
-            top: 24,
-            right: 22,
-            child: Transform.rotate(
-              angle: math.pi / 2,
-              child: const Icon(
-                Icons.contactless_outlined,
-                color: Color(0xFFDEE7FF),
-                size: 29,
-              ),
-            ),
-          ),
-          const Positioned(
-            left: 24,
-            top: 84,
-            child: SizedBox(
-              width: 39,
-              height: 30,
-              child: CustomPaint(painter: _ChipPainter()),
-            ),
-          ),
-          const Positioned(
-            left: 24,
-            bottom: 24,
-            child: Text(
-              '••••  4821',
-              style: TextStyle(
-                color: Color(0xFFE1E8FF),
-                fontSize: 16,
-                letterSpacing: 2,
-              ),
-            ),
-          ),
-          const Positioned(
-            right: 23,
-            bottom: 19,
-            child: Text(
-              'VISA',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 27,
-                fontWeight: FontWeight.w800,
-                fontStyle: FontStyle.italic,
-              ),
-            ),
-          ),
-        ],
-      ),
-    ),
-  );
-}
+class _OnboardingScene extends CustomPainter {
+  const _OnboardingScene(this.illustration, {required this.colors});
 
-class _OrbitPainter extends CustomPainter {
-  const _OrbitPainter();
+  final OnboardingIllustration illustration;
+  final ColorScheme colors;
+
+  static const _ink = Color(0xFF3F3C48);
+  static const _green = TrackerPalette.mint;
+  Color get _deepGreen => Color.lerp(_green, TrackerPalette.ink, 0.45)!;
+  Color get _mint => colors.primaryContainer;
+  Color get _accent => colors.primary;
+  Color get _accentDetail => Color.lerp(_accent, _ink, 0.25)!;
+  static const _skin = Color(0xFFE8B69C);
+  static const _clay = Color(0xFFD0AD97);
+  Color get _cream =>
+      Color.lerp(colors.surfaceContainerLow, colors.primary, 0.08)!;
+
+  Color get _line => colors.onSurfaceVariant.withValues(alpha: 0.5);
+
   @override
   void paint(Canvas canvas, Size size) {
+    final scale = math.min(size.width, size.height) / 320;
     canvas.save();
-    canvas.translate(size.width * .52, size.height * .53);
-    canvas.rotate(-.57);
-    final oval = Rect.fromCenter(
-      center: Offset.zero,
-      width: size.width * 1.08,
-      height: size.height * .65,
+    canvas.translate(
+      (size.width - 320 * scale) / 2,
+      (size.height - 320 * scale) / 2,
     );
-    canvas.drawOval(
-      oval,
-      Paint()
-        ..shader = const LinearGradient(
-          colors: [Color(0xFFCAD9FF), Color(0xFFDCE7FF), Color(0xFFB6C9FC)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ).createShader(oval),
+    canvas.scale(scale);
+    _stroke(
+      canvas,
+      [const Offset(42, 294), const Offset(282, 294)],
+      _line,
+      1.2,
     );
-    final ribbon = Rect.fromCenter(
-      center: Offset(24, size.height * .21),
-      width: size.width * .67,
-      height: size.height * .21,
-    );
-    canvas.drawOval(
-      ribbon,
-      Paint()
-        ..shader = const LinearGradient(
-          colors: [Color(0xFF839AFF), Color(0xFFC6D7FF), Color(0x00DDE7FF)],
-        ).createShader(ribbon),
-    );
-    canvas.drawOval(
-      oval.deflate(10),
-      Paint()
-        ..color = const Color(0x90FFFFFF)
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 1.3,
-    );
+    switch (illustration) {
+      case OnboardingIllustration.card:
+        _spending(canvas);
+      case OnboardingIllustration.growth:
+        _saving(canvas);
+      case OnboardingIllustration.security:
+        _security(canvas);
+    }
     canvas.restore();
-    canvas.drawCircle(
-      Offset(size.width * .91, size.height * .18),
-      3,
-      Paint()..color = const Color(0xFF98B1F5),
+  }
+
+  void _spending(Canvas canvas) {
+    // A light thought bubble keeps the composition open above the character.
+    _rounded(canvas, const Rect.fromLTWH(211, 30, 73, 61), 28, _line);
+    _rounded(
+      canvas,
+      const Rect.fromLTWH(212.2, 31.2, 70.6, 58.6),
+      27,
+      colors.surfaceContainerLow,
     );
-    canvas.drawCircle(
-      Offset(size.width * .08, size.height * .63),
+    _shape(canvas, [
+      const Offset(224, 87),
+      const Offset(218, 104),
+      const Offset(240, 89),
+    ], _line);
+    _shape(canvas, [
+      const Offset(225, 86),
+      const Offset(221, 99),
+      const Offset(238, 87),
+    ], colors.surfaceContainerLow);
+    _rounded(canvas, const Rect.fromLTWH(228, 49, 40, 27), 5, _accent);
+    _rounded(canvas, const Rect.fromLTWH(250, 57, 21, 13), 4, _deepGreen);
+    canvas.drawCircle(const Offset(256, 63.5), 1.5, Paint()..color = _cream);
+    _dashed(
+      canvas,
+      Path()
+        ..moveTo(284, 79)
+        ..quadraticBezierTo(308, 89, 307, 118),
+    );
+
+    _plant(canvas, x: 70, y: 211, scale: 0.82, raised: true);
+    _plant(canvas, x: 252, y: 276, scale: 0.85);
+    _person(canvas, x: 164, y: 118, shirt: _mint);
+    // Both arms meet naturally at the phone.
+    _stroke(
+      canvas,
+      [const Offset(140, 140), const Offset(132, 166), const Offset(157, 177)],
+      _skin,
+      9,
+    );
+    _stroke(
+      canvas,
+      [const Offset(186, 140), const Offset(194, 165), const Offset(173, 177)],
+      _skin,
+      9,
+    );
+    _rounded(canvas, const Rect.fromLTWH(157, 150, 16, 28), 3, _deepGreen);
+    _rounded(canvas, const Rect.fromLTWH(160, 154, 10, 16), 1, _green);
+    canvas.drawCircle(const Offset(165, 174), 1, Paint()..color = _mint);
+    canvas.drawOval(
+      const Rect.fromLTWH(151, 169, 10, 8),
+      Paint()..color = _skin,
+    );
+    canvas.drawOval(
+      const Rect.fromLTWH(170, 169, 9, 8),
+      Paint()..color = _skin,
+    );
+  }
+
+  void _saving(Canvas canvas) {
+    // A dotted path leads to a goal, echoing the reference's delivery route.
+    _dashed(
+      canvas,
+      Path()
+        ..moveTo(48, 101)
+        ..cubicTo(107, 107, 66, 41, 108, 51)
+        ..cubicTo(147, 64, 106, 117, 162, 110)
+        ..quadraticBezierTo(186, 105, 203, 78),
+    );
+    canvas.drawCircle(const Offset(221, 63), 21, Paint()..color = _cream);
+    canvas.drawCircle(const Offset(221, 63), 12, Paint()..color = _accent);
+    _stroke(
+      canvas,
+      [const Offset(216, 63), const Offset(220, 67), const Offset(227, 58)],
+      _deepGreen,
+      2.5,
+    );
+
+    _person(canvas, x: 105, y: 137, shirt: _accent, legLength: 80);
+    _stroke(
+      canvas,
+      [const Offset(82, 157), const Offset(74, 182), const Offset(87, 197)],
+      _skin,
+      9,
+    );
+    _stroke(
+      canvas,
+      [const Offset(128, 157), const Offset(142, 180), const Offset(164, 170)],
+      _skin,
+      9,
+    );
+    _coin(canvas, const Offset(171, 162), 14);
+
+    for (var index = 0; index < 4; index++) {
+      _coinLayer(canvas, 176, 281 - index * 9, 42);
+    }
+    for (var index = 0; index < 7; index++) {
+      _coinLayer(canvas, 223, 281 - index * 9, 45);
+    }
+    // A small sprout turns the tallest stack into a savings metaphor.
+    _stroke(
+      canvas,
+      [const Offset(245, 217), const Offset(245, 184)],
+      _deepGreen,
       2,
-      Paint()..color = const Color(0xFF98B1F5),
     );
+    _leaf(canvas, const Offset(245, 195), const Offset(224, 175), _green);
+    _leaf(canvas, const Offset(245, 204), const Offset(266, 181), _deepGreen);
+    _plant(canvas, x: 276, y: 282, scale: 0.5);
   }
 
-  @override
-  bool shouldRepaint(covariant _OrbitPainter oldDelegate) => false;
-}
+  void _security(Canvas canvas) {
+    // A welcoming doorway with a separate shield badge, rather than a UI card.
+    _rounded(canvas, const Rect.fromLTWH(125, 66, 112, 228), 2, _line);
+    _rounded(canvas, const Rect.fromLTWH(129, 70, 104, 224), 1, _clay);
+    _rounded(
+      canvas,
+      const Rect.fromLTWH(135, 76, 92, 218),
+      1,
+      const Color(0xFFD7B7A2),
+    );
+    _stroke(
+      canvas,
+      [const Offset(135, 294), const Offset(135, 76), const Offset(227, 76)],
+      const Color(0xFFB4927D),
+      1.5,
+    );
+    _rounded(canvas, const Rect.fromLTWH(211, 187, 7, 22), 3, _cream);
+    canvas.drawCircle(const Offset(214.5, 188), 5.5, Paint()..color = _ink);
+    _rounded(canvas, const Rect.fromLTWH(214, 190, 1, 8), 0.5, _cream);
+    _plant(canvas, x: 100, y: 275, scale: 0.92);
+    _rounded(canvas, const Rect.fromLTWH(135, 289, 111, 5), 2, _deepGreen);
 
-class _CardShinePainter extends CustomPainter {
-  const _CardShinePainter();
-  @override
-  void paint(Canvas canvas, Size size) {
-    final path = Path()
-      ..moveTo(size.width, size.height * .24)
-      ..quadraticBezierTo(
-        size.width * .6,
-        size.height * .48,
-        size.width * .24,
-        size.height,
-      )
-      ..lineTo(size.width, size.height)
+    canvas.drawCircle(const Offset(251, 121), 34, Paint()..color = _cream);
+    final shield = Path()
+      ..moveTo(251, 96)
+      ..quadraticBezierTo(263, 105, 272, 105)
+      ..lineTo(270, 126)
+      ..quadraticBezierTo(268, 139, 251, 149)
+      ..quadraticBezierTo(234, 139, 232, 126)
+      ..lineTo(230, 105)
+      ..quadraticBezierTo(242, 104, 251, 96)
       ..close();
-    canvas.drawPath(path, Paint()..color = const Color(0x40102043));
-    canvas.drawRRect(
-      RRect.fromRectAndRadius(Offset.zero & size, const Radius.circular(21)),
-      Paint()
-        ..color = const Color(0x22FFFFFF)
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 1.3,
+    canvas.drawPath(shield, Paint()..color = _accent);
+    _stroke(
+      canvas,
+      [const Offset(241, 122), const Offset(248, 129), const Offset(261, 114)],
+      _cream,
+      3,
+    );
+    _dashed(
+      canvas,
+      Path()
+        ..moveTo(62, 153)
+        ..quadraticBezierTo(56, 103, 100, 107),
+    );
+    canvas.drawCircle(const Offset(96, 79), 4, Paint()..color = _accent);
+  }
+
+  void _person(
+    Canvas canvas, {
+    required double x,
+    required double y,
+    required Color shirt,
+    double legLength = 99,
+  }) {
+    final hip = y + 69;
+    final foot = hip + legLength;
+    _shape(canvas, [
+      Offset(x - 20, hip - 6),
+      Offset(x + 20, hip - 6),
+      Offset(x + 21, foot - 3),
+      Offset(x + 9, foot - 3),
+      Offset(x - 1, hip + 30),
+      Offset(x - 10, foot - 3),
+      Offset(x - 22, foot - 3),
+    ], _ink);
+    _stroke(
+      canvas,
+      [Offset(x, hip + 11), Offset(x - 1, hip + 29)],
+      const Color(0xFF69616B),
+      1,
+    );
+    _rounded(canvas, Rect.fromLTWH(x - 22, foot - 5, 12, 8), 2, _skin);
+    _rounded(canvas, Rect.fromLTWH(x + 9, foot - 5, 12, 8), 2, _skin);
+    _rounded(canvas, Rect.fromLTWH(x - 27, foot + 1, 18, 6), 3, _ink);
+    _rounded(canvas, Rect.fromLTWH(x + 8, foot + 1, 19, 6), 3, _ink);
+    _shape(canvas, [
+      Offset(x - 8, y),
+      Offset(x - 24, y + 8),
+      Offset(x - 31, y + 28),
+      Offset(x - 20, y + 33),
+      Offset(x - 19, hip),
+      Offset(x + 20, hip),
+      Offset(x + 21, y + 33),
+      Offset(x + 31, y + 27),
+      Offset(x + 23, y + 8),
+      Offset(x + 8, y),
+    ], shirt);
+    _rounded(canvas, Rect.fromLTWH(x - 5, y - 10, 10, 16), 4, _skin);
+    _stroke(
+      canvas,
+      [Offset(x - 8, y + 3), Offset(x, y + 8), Offset(x + 8, y + 3)],
+      shirt == _accent ? _accentDetail : _accent,
+      1.5,
+    );
+    canvas.drawOval(
+      Rect.fromCenter(center: Offset(x, y - 22), width: 26, height: 34),
+      Paint()..color = _skin,
+    );
+    _shape(canvas, [
+      Offset(x - 13, y - 20),
+      Offset(x - 17, y - 37),
+      Offset(x - 12, y - 36),
+      Offset(x - 14, y - 43),
+      Offset(x - 5, y - 39),
+      Offset(x - 3, y - 46),
+      Offset(x + 4, y - 40),
+      Offset(x + 12, y - 39),
+      Offset(x + 16, y - 31),
+      Offset(x + 12, y - 19),
+      Offset(x + 8, y - 31),
+      Offset(x - 6, y - 32),
+    ], _ink);
+    canvas.drawCircle(Offset(x - 5, y - 22), 0.8, Paint()..color = _ink);
+    canvas.drawCircle(Offset(x + 5, y - 22), 0.8, Paint()..color = _ink);
+    _stroke(canvas, [Offset(x - 2, y - 14), Offset(x + 3, y - 14)], _clay, 1);
+  }
+
+  void _plant(
+    Canvas canvas, {
+    required double x,
+    required double y,
+    double scale = 1,
+    bool raised = false,
+  }) {
+    canvas.save();
+    canvas.translate(x, y);
+    canvas.scale(scale);
+    for (final tip in [
+      const Offset(-26, -43),
+      const Offset(0, -61),
+      const Offset(27, -48),
+      const Offset(17, -25),
+    ]) {
+      _stroke(canvas, [const Offset(0, 0), tip * 0.8], _green, 1.5);
+      _leaf(canvas, tip * 0.45, tip, tip.dx > 0 ? _green : _deepGreen);
+    }
+    _shape(canvas, [
+      const Offset(-20, 0),
+      const Offset(20, 0),
+      const Offset(14, 23),
+      const Offset(-14, 23),
+    ], _clay);
+    _rounded(canvas, const Rect.fromLTWH(-22, -2, 44, 5), 2, _cream);
+    if (raised) {
+      _stroke(
+        canvas,
+        [const Offset(-17, 24), const Offset(-22, 100)],
+        _line,
+        1.5,
+      );
+      _stroke(
+        canvas,
+        [const Offset(17, 24), const Offset(22, 100)],
+        _line,
+        1.5,
+      );
+      _stroke(canvas, [const Offset(-19, 47), const Offset(19, 47)], _line, 1);
+    }
+    canvas.restore();
+  }
+
+  void _leaf(Canvas canvas, Offset base, Offset tip, Color color) {
+    final vector = tip - base;
+    final normal = Offset(-vector.dy, vector.dx) * 0.3;
+    canvas.drawPath(
+      Path()
+        ..moveTo(base.dx, base.dy)
+        ..quadraticBezierTo(
+          base.dx + vector.dx * 0.2 + normal.dx,
+          base.dy + vector.dy * 0.2 + normal.dy,
+          tip.dx,
+          tip.dy,
+        )
+        ..quadraticBezierTo(
+          base.dx + vector.dx * 0.65 - normal.dx,
+          base.dy + vector.dy * 0.65 - normal.dy,
+          base.dx,
+          base.dy,
+        )
+        ..close(),
+      Paint()..color = color,
     );
   }
 
-  @override
-  bool shouldRepaint(covariant _CardShinePainter oldDelegate) => false;
-}
-
-class _ChipPainter extends CustomPainter {
-  const _ChipPainter();
-  @override
-  void paint(Canvas canvas, Size size) {
-    final rect = Offset.zero & size;
-    canvas.drawRRect(
-      RRect.fromRectAndRadius(rect, const Radius.circular(6)),
+  void _coin(Canvas canvas, Offset center, double radius) {
+    canvas.drawCircle(center, radius, Paint()..color = _accent);
+    canvas.drawCircle(
+      center,
+      radius - 3,
       Paint()
-        ..shader = const LinearGradient(
-          colors: [Color(0xFFECEADA), Color(0xFFB8C3D3), Color(0xFFEAF0F4)],
-        ).createShader(rect),
+        ..color = _accentDetail
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1,
     );
+    _stroke(
+      canvas,
+      [center - const Offset(0, 5), center + const Offset(0, 5)],
+      _cream,
+      2,
+    );
+  }
+
+  void _coinLayer(Canvas canvas, double x, double y, double width) {
+    _rounded(canvas, Rect.fromLTWH(x, y, width, 10), 3, _accent);
+    _stroke(
+      canvas,
+      [Offset(x + 3, y + 9), Offset(x + width - 3, y + 9)],
+      _accentDetail,
+      1,
+    );
+    _stroke(canvas, [Offset(x + 8, y + 2), Offset(x + 8, y + 6)], _cream, 1);
+  }
+
+  void _rounded(Canvas canvas, Rect rect, double radius, Color color) =>
+      canvas.drawRRect(
+        RRect.fromRectAndRadius(rect, Radius.circular(radius)),
+        Paint()..color = color,
+      );
+
+  void _shape(Canvas canvas, List<Offset> points, Color color) =>
+      canvas.drawPath(Path()..addPolygon(points, true), Paint()..color = color);
+
+  void _stroke(Canvas canvas, List<Offset> points, Color color, double width) =>
+      canvas.drawPath(
+        Path()..addPolygon(points, false),
+        Paint()
+          ..color = color
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = width
+          ..strokeCap = StrokeCap.round
+          ..strokeJoin = StrokeJoin.round,
+      );
+
+  void _dashed(Canvas canvas, Path path) {
     final paint = Paint()
-      ..color = const Color(0xFF8D9BAC)
-      ..strokeWidth = .9
-      ..style = PaintingStyle.stroke;
-    canvas.drawRRect(
-      RRect.fromRectAndRadius(rect.deflate(7), const Radius.circular(4)),
-      paint,
-    );
-    for (final y in [.3, .7]) {
-      canvas.drawLine(
-        Offset(0, size.height * y),
-        Offset(7, size.height * y),
-        paint,
-      );
-      canvas.drawLine(
-        Offset(size.width - 7, size.height * y),
-        Offset(size.width, size.height * y),
-        paint,
-      );
+      ..color = _line
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.2
+      ..strokeCap = StrokeCap.round;
+    for (final metric in path.computeMetrics()) {
+      for (double distance = 0; distance < metric.length; distance += 8) {
+        canvas.drawPath(metric.extractPath(distance, distance + 3), paint);
+      }
     }
-    canvas.drawLine(
-      Offset(size.width * .5, 0),
-      Offset(size.width * .5, 7),
-      paint,
-    );
-    canvas.drawLine(
-      Offset(size.width * .5, size.height - 7),
-      Offset(size.width * .5, size.height),
-      paint,
-    );
   }
 
   @override
-  bool shouldRepaint(covariant _ChipPainter oldDelegate) => false;
-}
-
-class _GrowthPainter extends CustomPainter {
-  const _GrowthPainter();
-  @override
-  void paint(Canvas canvas, Size size) {
-    final line = Path()..moveTo(0, size.height * .9);
-    const points = [
-      Offset(.18, .66),
-      Offset(.33, .8),
-      Offset(.5, .4),
-      Offset(.63, .55),
-      Offset(.8, .18),
-      Offset(1, .08),
-    ];
-    for (final point in points) {
-      line.lineTo(point.dx * size.width, point.dy * size.height);
-    }
-    final fill = Path.from(line)
-      ..lineTo(size.width, size.height)
-      ..lineTo(0, size.height)
-      ..close();
-    canvas.drawPath(
-      fill,
-      Paint()
-        ..shader = const LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [Color(0x555875F6), Color(0x005875F6)],
-        ).createShader(Offset.zero & size),
-    );
-    canvas.drawPath(
-      line,
-      Paint()
-        ..color = WelcomeColors.blue
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 2
-        ..strokeCap = StrokeCap.round
-        ..strokeJoin = StrokeJoin.round,
-    );
-  }
-
-  @override
-  bool shouldRepaint(covariant _GrowthPainter oldDelegate) => false;
+  bool shouldRepaint(_OnboardingScene oldDelegate) =>
+      illustration != oldDelegate.illustration || colors != oldDelegate.colors;
 }

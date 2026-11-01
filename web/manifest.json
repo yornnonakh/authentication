@@ -1,11 +1,11 @@
 {
-    "name": "Finsight Personal Finance",
-    "short_name": "Finsight",
+    "name": "Expen Tracker",
+    "short_name": "Expen Tracker",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "Personal finance and expense tracking with Finsight.",
+    "background_color": "#F8F8FA",
+    "theme_color": "#9865F8",
+    "description": "Track your spending, plan your budget, and manage your money with Expen Tracker.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

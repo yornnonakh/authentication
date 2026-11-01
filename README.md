@@ -144,6 +144,29 @@ Supabase reference: [updating user metadata](https://supabase.com/docs/reference
 
 ## Run and verify
 
+### Firebase Hosting
+
+The web deployment is named **Expen Tracker**. It uses the `expen-tracker-07042`
+Hosting site in Firebase project `expensetracker-07042`.
+
+Live URL: <https://expen-tracker-07042.firebaseapp.com>.
+Firebase also provides <https://expen-tracker-07042.web.app> for the same site.
+
+```sh
+flutter build web --release
+firebase deploy --only hosting --project expensetracker-07042
+```
+
+Hosting serves `build/web` and rewrites application routes to `index.html`.
+Firebase CLI caches and diagnostics stay out of source control.
+
+Include both `https://expen-tracker-07042.firebaseapp.com` and
+`https://expen-tracker-07042.web.app` in the Supabase Auth redirect allowlist for
+Google sign-in. Web authentication returns to the current site; mobile
+authentication retains `com.finsight.auth://login-callback/`.
+
+### Local development
+
 ```sh
 flutter pub get
 flutter run
@@ -175,9 +198,10 @@ reload (`r`) rebuilds the current screen without rerunning `main()`. Once the
 current initialization is running, hot reload should keep the signed-in screen
 and profile. See [Flutter hot reload](https://docs.flutter.dev/tools/hot-reload).
 
-The existing Supabase configuration remains in `main.dart`. Google uses
-`com.finsight.auth://login-callback/`, which must match the Supabase redirect
-allowlist and the Android/iOS callback settings. Email templates should deliver
+The existing Supabase configuration remains in `main.dart`. Google on Android
+and iOS uses `com.finsight.auth://login-callback/`, which must match the Supabase
+redirect allowlist and the native callback settings. On web, Google returns to
+the current site's origin. Email templates should deliver
 six-digit signup and recovery codes. Apple and Facebook remain unconfigured.
 
 Riverpod lifecycle reference: [automatic disposal](https://riverpod.dev/docs/concepts2/auto_dispose).

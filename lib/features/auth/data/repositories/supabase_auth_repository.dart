@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../domain/models/auth_event.dart';
@@ -54,7 +55,7 @@ class SupabaseAuthRepository implements AuthRepository {
   Future<bool> signInWithGoogle() => _request(
     () => _auth.signInWithOAuth(
       OAuthProvider.google,
-      redirectTo: googleRedirectUrl,
+      redirectTo: kIsWeb ? Uri.base.origin : googleRedirectUrl,
     ),
   );
 

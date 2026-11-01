@@ -33,6 +33,11 @@ migrate_working_dir/
 /build/
 /coverage/
 
+# Firebase Hosting cache and local CLI diagnostics
+.firebase/
+firebase-debug.log*
+firepit-log.txt
+
 # Symbolication related
 app.*.symbols
 
