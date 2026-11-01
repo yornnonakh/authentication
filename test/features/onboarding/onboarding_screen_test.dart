@@ -37,6 +37,12 @@ void main() {
     await tester.pump();
   }
 
+  Future<void> finishStartup(WidgetTester tester) async {
+    // Reduced motion has no animation frames to advance the startup delay.
+    await tester.pump(const Duration(milliseconds: 1100));
+    await tester.pumpAndSettle();
+  }
+
   Future<void> completeOnboarding(WidgetTester tester) async {
     for (int i = 0; i < 3; i++) {
       if (find.byType(OnboardingScreen).evaluate().isEmpty) break;
@@ -53,7 +59,7 @@ void main() {
     (tester) async {
       await mount(tester);
       expect(find.byType(SplashScreen), findsOneWidget);
-      await tester.pumpAndSettle();
+      await finishStartup(tester);
       expect(find.byType(OnboardingScreen), findsOneWidget);
       expect(find.text('Your Money.\nMore Possibilities.'), findsOneWidget);
       await tester.drag(find.byType(PageView), const Offset(-700, 0));
@@ -72,7 +78,7 @@ void main() {
     tester,
   ) async {
     await mount(tester);
-    await tester.pumpAndSettle();
+    await finishStartup(tester);
     await completeOnboarding(tester);
     expect(find.byType(SignInScreen), findsOneWidget);
     expect(onboarding.completed, isTrue);
@@ -84,14 +90,14 @@ void main() {
     'completion remembers onboarding and shows onboarding on next startup when unauthenticated',
     (tester) async {
       await mount(tester);
-      await tester.pumpAndSettle();
+      await finishStartup(tester);
       await completeOnboarding(tester);
       expect(find.byType(SignInScreen), findsOneWidget);
       expect(onboarding.completed, isTrue);
       await tester.pumpWidget(const SizedBox());
       await tester.pumpAndSettle();
       await mount(tester);
-      await tester.pumpAndSettle();
+      await finishStartup(tester);
       expect(find.byType(OnboardingScreen), findsOneWidget);
     },
   );
@@ -101,7 +107,7 @@ void main() {
   ) async {
     auth.hasSavedSession = true;
     await mount(tester);
-    await tester.pumpAndSettle();
+    await finishStartup(tester);
     expect(find.byType(DashboardScreen), findsOneWidget);
     expect(find.byType(OnboardingScreen), findsNothing);
     expect(onboarding.readCalls, 0);
@@ -113,7 +119,7 @@ void main() {
   ) async {
     onboarding.saveFailure = Exception('Storage unavailable');
     await mount(tester);
-    await tester.pumpAndSettle();
+    await finishStartup(tester);
     await completeOnboarding(tester);
     expect(find.byType(OnboardingScreen), findsOneWidget);
     expect(

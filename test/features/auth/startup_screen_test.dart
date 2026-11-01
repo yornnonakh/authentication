@@ -36,6 +36,8 @@ void main() {
         child: const MyApp(),
       ),
     );
+    // Advance the startup delay even when reduced motion schedules no frames.
+    await tester.pump(const Duration(milliseconds: 1100));
     await tester.pumpAndSettle();
   }
 
@@ -155,6 +157,8 @@ void main() {
       expect(auth.signOutCalls, 0);
       auth.restoreFailure = null;
       await tester.tap(find.text('Try again'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 1100));
       await tester.pumpAndSettle();
       expect(find.byType(DashboardScreen), findsOneWidget);
       expect(auth.restoreCalls, 2);
